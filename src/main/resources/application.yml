@@ -59,6 +59,9 @@ spring:
             logger-level: basic
           adams-sns-asset:
             url: ${adams_sns_host:http://adams-sns-api:8080}
+  threads:
+    virtual:
+      enabled: on
 
 ## eureka
 eureka:
@@ -75,11 +78,10 @@ eureka:
 ## malgn
 malgn:
   enabled: on
-  jpa:
-    enabled: off
   redis:
     enabled: on
     host: ${redis_host:redis://localhost:6379}
+
 
 ## logging
 logging:
