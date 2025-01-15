@@ -76,7 +76,7 @@ eureka:
 malgn:
   enabled: on
   jpa:
-    enabled: on
+    enabled: off
   redis:
     enabled: on
     host: ${redis_host:redis://localhost:6379}
