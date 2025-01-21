@@ -16,7 +16,7 @@ import com.malgn.ontimeapi.domain.position.service.v1.PositionV1Service;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(path = "v1/position")
+@RequestMapping("v1/position")
 @PreAuthorize("hasRole('MANAGER')")
 public class PositionV1Controller {
 

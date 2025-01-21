@@ -1,7 +1,6 @@
 package com.malgn.ontimeapi.domain.user.entity;
 
 import static com.google.common.base.Preconditions.*;
-import static org.apache.commons.lang3.ObjectUtils.*;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -19,10 +18,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.ToString.Exclude;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-
-import com.google.common.base.Preconditions;
 
 import com.malgn.ontimeapi.domain.position.entity.Position;
 
