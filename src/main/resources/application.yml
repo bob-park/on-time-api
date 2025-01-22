@@ -77,6 +77,10 @@ eureka:
 ## malgn
 malgn:
   enabled: on
+  auth:
+    user:
+      enabled: on
+      host: http://localhost:8081
   redis:
     enabled: on
     host: ${redis_host:redis://localhost:6379}

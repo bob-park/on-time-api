@@ -29,11 +29,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import com.malgn.auth.client.RoleClient;
+import com.malgn.auth.model.RoleResponse;
 import com.malgn.ontimeapi.configure.security.converter.JwtRoleGrantAuthoritiesConverter;
 import com.malgn.ontimeapi.configure.security.handler.RestAccessDeniedHandler;
 import com.malgn.ontimeapi.configure.security.handler.RestAuthenticationEntryPoint;
-import com.malgn.ontimeapi.domain.role.feign.RoleFeignClient;
-import com.malgn.ontimeapi.domain.role.model.RoleResponse;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -44,8 +44,6 @@ public class OAuth2ResourceServerConfiguration {
     private final ObjectMapper om;
 
     private final CorsConfigurationSource corsConfigurationSource;
-
-    private final RoleFeignClient roleClient;
 
     @Bean
     public SecurityFilterChain resourceSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -116,9 +114,11 @@ public class OAuth2ResourceServerConfiguration {
     }
 
     @Bean
-    public RoleHierarchyImpl roleHierarchy() {
+    public RoleHierarchyImpl roleHierarchy(RoleClient roleClient) {
 
-        Map<String, List<String>> roleHierarchyMap = parseRoleHierarchyMap();
+        List<RoleResponse> roles = roleClient.getAll();
+
+        Map<String, List<String>> roleHierarchyMap = parseRoleHierarchyMap(roles);
         String rolesHierarchyStr = RoleHierarchyUtils.roleHierarchyFromMap(roleHierarchyMap);
 
         log.debug("role hierarchy=\n{}", rolesHierarchyStr);
@@ -126,11 +126,9 @@ public class OAuth2ResourceServerConfiguration {
         return RoleHierarchyImpl.fromHierarchy(rolesHierarchyStr);
     }
 
-    private Map<String, List<String>> parseRoleHierarchyMap() {
+    private Map<String, List<String>> parseRoleHierarchyMap(final List<RoleResponse> roles) {
 
         Map<String, List<String>> result = Maps.newHashMap();
-
-        List<RoleResponse> roles = roleClient.getAll();
 
         for (RoleResponse role : roles) {
 

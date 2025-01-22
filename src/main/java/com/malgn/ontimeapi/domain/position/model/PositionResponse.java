@@ -1,6 +1,6 @@
 package com.malgn.ontimeapi.domain.position.model;
 
-import com.malgn.ontimeapi.common.result.CommonResponse;
+import com.malgn.common.model.CommonResponse;
 
 public interface PositionResponse extends CommonResponse {
     Long id();
