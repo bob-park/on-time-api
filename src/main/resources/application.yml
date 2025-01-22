@@ -57,8 +57,6 @@ spring:
         config:
           default:
             logger-level: basic
-          adams-sns-asset:
-            url: ${adams_sns_host:http://adams-sns-api:8080}
   threads:
     virtual:
       enabled: on

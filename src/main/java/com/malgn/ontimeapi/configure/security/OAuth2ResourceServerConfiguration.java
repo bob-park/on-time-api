@@ -32,8 +32,8 @@ import com.google.common.collect.Maps;
 import com.malgn.ontimeapi.configure.security.converter.JwtRoleGrantAuthoritiesConverter;
 import com.malgn.ontimeapi.configure.security.handler.RestAccessDeniedHandler;
 import com.malgn.ontimeapi.configure.security.handler.RestAuthenticationEntryPoint;
+import com.malgn.ontimeapi.domain.role.feign.RoleFeignClient;
 import com.malgn.ontimeapi.domain.role.model.RoleResponse;
-import com.malgn.ontimeapi.domain.role.service.RoleService;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -45,7 +45,7 @@ public class OAuth2ResourceServerConfiguration {
 
     private final CorsConfigurationSource corsConfigurationSource;
 
-    private final RoleService roleService;
+    private final RoleFeignClient roleClient;
 
     @Bean
     public SecurityFilterChain resourceSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -130,7 +130,7 @@ public class OAuth2ResourceServerConfiguration {
 
         Map<String, List<String>> result = Maps.newHashMap();
 
-        List<RoleResponse> roles = roleService.getAll();
+        List<RoleResponse> roles = roleClient.getAll();
 
         for (RoleResponse role : roles) {
 
