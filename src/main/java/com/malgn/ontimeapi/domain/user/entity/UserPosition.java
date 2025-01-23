@@ -33,7 +33,7 @@ public class UserPosition {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String userId;
+    private String userUniqueId;
 
     @Exclude
     @ManyToOne(fetch = FetchType.LAZY)
@@ -41,12 +41,12 @@ public class UserPosition {
     private Position position;
 
     @Builder
-    private UserPosition(Long id, String userId) {
+    private UserPosition(Long id, String userUniqueId) {
 
-        checkArgument(StringUtils.isNotEmpty(userId), "userId must be provided.");
+        checkArgument(StringUtils.isNotEmpty(userUniqueId), "userUniqueId must be provided.");
 
         this.id = id;
-        this.userId = userId;
+        this.userUniqueId = userUniqueId;
     }
 
     public void updatePosition(Position position) {
