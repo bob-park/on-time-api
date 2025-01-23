@@ -41,7 +41,7 @@ public class Position extends BaseEntity<Long> {
     private String description;
 
     @Exclude
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "position", orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "position")
     private List<UserPosition> userPositions = new ArrayList<>();
 
     @Builder
@@ -57,14 +57,14 @@ public class Position extends BaseEntity<Long> {
     /*
      * 편의 메서드
      */
-    public void addUserPosition(String userId) {
-        UserPosition createdUserPosition =
-            UserPosition.builder()
-                .userId(userId)
-                .build();
+    public void addUserPosition(UserPosition userPosition) {
 
-        createdUserPosition.updatePosition(this);
+        userPosition.updatePosition(this);
 
-        getUserPositions().add(createdUserPosition);
+        getUserPositions().add(userPosition);
+    }
+
+    public void removeUserPosition(UserPosition userPosition) {
+        getUserPositions().remove(userPosition);
     }
 }
