@@ -26,6 +26,7 @@ create table teams
     id                 bigserial               not null primary key,
     name               varchar(50)             not null,
     description        text,
+    is_deleted         bool      default false not null,
     created_date       timestamp default now() not null,
     created_by         varchar(50)             not null,
     last_modified_date timestamp,
