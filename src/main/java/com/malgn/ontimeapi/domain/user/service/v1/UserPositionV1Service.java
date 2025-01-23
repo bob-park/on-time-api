@@ -31,7 +31,7 @@ public class UserPositionV1Service implements UserPositionService {
 
     @Transactional
     @Override
-    public UserPositionResponse updatePosition(String userUniqueId, UpdateUserPositionRequest updateRequest) {
+    public UserPositionResponse updatePosition(String uniqueUserId, UpdateUserPositionRequest updateRequest) {
 
         UpdateUserPositionV1Request updateV1Request = (UpdateUserPositionV1Request)updateRequest;
 
@@ -42,7 +42,7 @@ public class UserPositionV1Service implements UserPositionService {
                 .orElseThrow(() -> new NotFoundException("Position not found"));
 
         UserPosition prevPosition =
-            userPositionRepository.getUserPosition(userUniqueId)
+            userPositionRepository.getUserPosition(uniqueUserId)
                 .orElse(null);
 
         // 기본 prev 가 있는 경우 제거
@@ -52,14 +52,14 @@ public class UserPositionV1Service implements UserPositionService {
 
         UserPosition createdUserPosition =
             UserPosition.builder()
-                .userUniqueId(userUniqueId)
+                .userUniqueId(uniqueUserId)
                 .build();
 
         position.addUserPosition(createdUserPosition);
 
         createdUserPosition = userPositionRepository.save(createdUserPosition);
 
-        return from(userUniqueId, position);
+        return from(uniqueUserId, position);
     }
 
     @Override

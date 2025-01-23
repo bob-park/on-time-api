@@ -23,7 +23,7 @@ public class UserPositionQueryRepositoryImpl implements UserPositionQueryReposit
         return Optional.ofNullable(
             query.selectFrom(userPosition)
                 .join(userPosition.position, position).fetchJoin()
-                .where(userPosition.userId.eq(userId))
+                .where(userPosition.userUniqueId.eq(userId))
                 .fetchOne());
     }
 }
