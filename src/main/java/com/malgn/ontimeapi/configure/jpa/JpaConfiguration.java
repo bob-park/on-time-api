@@ -29,6 +29,10 @@ public class JpaConfiguration {
         return () -> {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
+            if (auth == null) {
+                return Optional.of("system");
+            }
+
             if (auth.getClass().isAssignableFrom(AnonymousAuthenticationToken.class)) {
                 throw new AuthenticationServiceException("Authentication is required...");
             }

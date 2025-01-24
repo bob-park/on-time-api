@@ -64,6 +64,7 @@ create table attendances_records
     id                 bigserial               not null primary key,
     user_unique_id     varchar(41)             not null,
     status             varchar(20)             not null,
+    day_off_type       varchar(20),
     working_date       date                    not null,
     clock_in_time      timestamp,
     leave_work_at      timestamp,

@@ -5,14 +5,12 @@ import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.malgn.common.exception.AlreadyExecuteException;
 import com.malgn.common.exception.AlreadyExistException;
 import com.malgn.common.exception.NotFoundException;
 import com.malgn.common.model.Id;
 import com.malgn.ontimeapi.domain.attendance.entity.AttendanceCheck;
 import com.malgn.ontimeapi.domain.attendance.entity.AttendanceRecord;
 import com.malgn.ontimeapi.domain.attendance.entity.AttendanceType;
-import com.malgn.ontimeapi.domain.attendance.entity.DayOffType;
 import com.malgn.ontimeapi.domain.attendance.exception.ExpiredException;
 import com.malgn.ontimeapi.domain.attendance.repository.AttendanceCheckRepository;
 import com.malgn.ontimeapi.domain.attendance.repository.AttendanceRecordRepository;
@@ -41,27 +39,23 @@ public class AttendanceClockInProvider implements AttendanceProvider {
         }
 
         AttendanceRecord prevRecord =
-            recordRepository.getByWorkingDate(userUniqueId.getValue(), check.getWorkingDate())
+            recordRepository.getClockInByWorkingDate(userUniqueId.getValue(), check.getWorkingDate())
                 .orElse(null);
 
         if (prevRecord != null) {
             throw new AlreadyExistException("exist clock in.");
         }
 
-        AttendanceRecord createdRecord =
-            AttendanceRecord.builder()
-                .userUniqueId(userUniqueId.getValue())
-                .workingDate(check.getWorkingDate())
-                .clockInTime(now)
-                // TODO 연(월)차 연동 필요
-                .dayOffType(DayOffType.DAY_OFF)
-                .build();
+        AttendanceRecord attendanceRecord =
+            recordRepository.getWaitingByWorkingDate(userUniqueId.getValue(),
+                    check.getWorkingDate())
+                .orElseThrow(() -> new NotFoundException("No exist waiting attendance record..."));
 
-        createdRecord = recordRepository.save(createdRecord);
+        attendanceRecord.updateClockInTime(now);
 
         log.debug("clock in user. (userUniqueId={}, time={})", userUniqueId.getValue(), now);
 
-        return createdRecord;
+        return attendanceRecord;
     }
 
     @Override

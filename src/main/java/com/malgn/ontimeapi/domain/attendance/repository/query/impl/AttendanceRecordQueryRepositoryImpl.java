@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import com.malgn.ontimeapi.domain.attendance.entity.AttendanceRecord;
+import com.malgn.ontimeapi.domain.attendance.entity.AttendanceStatus;
 import com.malgn.ontimeapi.domain.attendance.entity.QAttendanceRecord;
 import com.malgn.ontimeapi.domain.attendance.repository.query.AttendanceRecordQueryRepository;
 
@@ -19,7 +20,18 @@ public class AttendanceRecordQueryRepositoryImpl implements AttendanceRecordQuer
     private final JPAQueryFactory query;
 
     @Override
-    public Optional<AttendanceRecord> getByWorkingDate(String userUniqueId, LocalDate workingDate) {
+    public Optional<AttendanceRecord> getWaitingByWorkingDate(String userUniqueId, LocalDate workingDate) {
+        return Optional.ofNullable(
+            query.selectFrom(attendanceRecord)
+                .where(
+                    attendanceRecord.userUniqueId.eq(userUniqueId),
+                    attendanceRecord.workingDate.eq(workingDate),
+                    attendanceRecord.clockInTime.isNull())
+                .fetchOne());
+    }
+
+    @Override
+    public Optional<AttendanceRecord> getClockInByWorkingDate(String userUniqueId, LocalDate workingDate) {
         return Optional.ofNullable(
             query.selectFrom(attendanceRecord)
                 .where(

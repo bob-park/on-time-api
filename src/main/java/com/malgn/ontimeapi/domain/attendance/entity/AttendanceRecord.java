@@ -33,8 +33,8 @@ import com.malgn.common.exception.NotSupportException;
 @Table(name = "attendances_records")
 public class AttendanceRecord extends BaseEntity<Long> {
 
-    private static final int HOURS_DAY_OFF = 8;
-    private static final int HOURS_HALF_DAY_OFF = 4;
+    private static final int HOURS_DAY_ALL = 8;
+    private static final int HOURS_HALF_DAY = 4;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,6 +47,9 @@ public class AttendanceRecord extends BaseEntity<Long> {
     @Enumerated(EnumType.STRING)
     private AttendanceStatus status;
 
+    @Enumerated(EnumType.STRING)
+    private DayOffType dayOffType;
+
     private LocalDateTime clockInTime;
     private LocalDateTime leaveWorkAt;
     private LocalDateTime clockOutTime;
@@ -54,20 +57,17 @@ public class AttendanceRecord extends BaseEntity<Long> {
     private String message;
 
     @Builder
-    private AttendanceRecord(Long id, String userUniqueId, LocalDate workingDate, AttendanceStatus status, LocalDateTime clockInTime,
-        LocalDateTime clockOutTime, String message, DayOffType dayOffType) {
-
+    private AttendanceRecord(Long id, String userUniqueId, LocalDate workingDate, AttendanceStatus status,
+        DayOffType dayOffType, String message) {
 
         checkArgument(StringUtils.isNotBlank(userUniqueId), "userUniqueId must be provided.");
         checkArgument(isNotEmpty(workingDate), "workingDate must be provided.");
 
         this.id = id;
         this.status = defaultIfNull(status, AttendanceStatus.WAITING);
+        this.dayOffType = dayOffType;
         this.userUniqueId = userUniqueId;
         this.workingDate = workingDate;
-        this.clockInTime = clockInTime;
-        this.leaveWorkAt = calculateLeaveWorkAt(clockInTime, dayOffType);
-        this.clockOutTime = clockOutTime;
         this.message = message;
     }
 
@@ -78,16 +78,21 @@ public class AttendanceRecord extends BaseEntity<Long> {
         this.clockOutTime = clockOutTime;
     }
 
-    private LocalDateTime calculateLeaveWorkAt(LocalDateTime clockInTime, DayOffType dayOffType) {
+    public void updateClockInTime(LocalDateTime clockInTime) {
+        this.clockInTime = clockInTime;
+        this.leaveWorkAt = calculateLeaveWorkAt(clockInTime);
+    }
+
+    private LocalDateTime calculateLeaveWorkAt(LocalDateTime clockInTime) {
 
         boolean isAm = clockInTime.toLocalTime().isBefore(LocalTime.NOON);
 
         // 점심시간 포함 여부
         int plusHours = isAm ? 1 : 0;
 
-        switch (dayOffType) {
-            case DAY_OFF -> plusHours += HOURS_DAY_OFF;
-            case HALF_DAY_OFF -> plusHours += HOURS_HALF_DAY_OFF;
+        switch (getDayOffType()) {
+            case null -> plusHours += HOURS_DAY_ALL;
+            case HALF_DAY_OFF -> plusHours += HOURS_HALF_DAY;
             default -> throw new NotSupportException(dayOffType.name());
         }
 

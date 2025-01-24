@@ -89,6 +89,8 @@ malgn:
 on-time:
   attendance:
     expired-check: ${expired_attendance_check:10m}
+    schedule:
+      cron-generate-attendance-record: ${cron_generate_attendance_record:0 1 0 * * *}
 
 ## logging
 logging:

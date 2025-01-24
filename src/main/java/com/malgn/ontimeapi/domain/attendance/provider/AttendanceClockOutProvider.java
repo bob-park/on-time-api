@@ -38,7 +38,7 @@ public class AttendanceClockOutProvider implements AttendanceProvider {
         }
 
         AttendanceRecord attendanceRecord =
-            recordRepository.getByWorkingDate(userUniqueId.getValue(),
+            recordRepository.getClockInByWorkingDate(userUniqueId.getValue(),
                     check.getWorkingDate())
                 .orElseThrow(() -> new NotFoundException("record clock in..."));
 

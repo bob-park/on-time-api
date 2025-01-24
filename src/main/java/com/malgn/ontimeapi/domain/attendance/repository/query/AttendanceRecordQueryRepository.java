@@ -7,6 +7,8 @@ import com.malgn.ontimeapi.domain.attendance.entity.AttendanceRecord;
 
 public interface AttendanceRecordQueryRepository {
 
-    Optional<AttendanceRecord> getByWorkingDate(String userUniqueId, LocalDate workingDate);
+    Optional<AttendanceRecord> getWaitingByWorkingDate(String userUniqueId, LocalDate workingDate);
+
+    Optional<AttendanceRecord> getClockInByWorkingDate(String userUniqueId, LocalDate workingDate);
 
 }
