@@ -49,7 +49,7 @@ create table attendances_checks
 (
     id                 varchar(41)             not null primary key,
     type               varchar(20)             not null,
-    sub_type           varchar(20)             not null,
+    attendance_type    varchar(20)             not null,
     working_date       date                    not null,
     expired_date       timestamp               not null,
     created_date       timestamp default now() not null,

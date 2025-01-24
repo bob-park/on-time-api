@@ -3,7 +3,7 @@ package com.malgn.ontimeapi.domain.attendance.model;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import com.malgn.ontimeapi.domain.attendance.entity.AttendanceCheckSubType;
+import com.malgn.ontimeapi.domain.attendance.entity.AttendanceType;
 import com.malgn.ontimeapi.domain.attendance.entity.AttendanceCheckType;
 
 public interface AttendanceCheckResponse {
@@ -12,7 +12,7 @@ public interface AttendanceCheckResponse {
 
     AttendanceCheckType type();
 
-    AttendanceCheckSubType subType();
+    AttendanceType attendanceType();
 
     LocalDate workingDate();
 

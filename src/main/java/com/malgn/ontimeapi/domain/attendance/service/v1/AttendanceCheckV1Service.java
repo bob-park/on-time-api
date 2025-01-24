@@ -38,16 +38,17 @@ public class AttendanceCheckV1Service implements AttendanceCheckService {
         CurrentV1Request currentV1Request = (CurrentV1Request)currentRequest;
 
         checkArgument(isNotEmpty(currentV1Request.type()), "type must be provided.");
+        checkArgument(isNotEmpty(currentV1Request.attendanceType()), "attendanceType must be provided.");
 
         LocalDateTime now = LocalDateTime.now();
 
         AttendanceCheck attendanceCheck =
-            attendanceCheckRepository.getBetweenDateTime(now)
+            attendanceCheckRepository.currentCheck(now, currentV1Request.attendanceType())
                 .orElseGet(() -> {
                     AttendanceCheck createdCheck =
                         AttendanceCheck.builder()
                             .type(currentV1Request.type())
-                            .subType(currentV1Request.subType())
+                            .attendanceType(currentV1Request.attendanceType())
                             .workingDate(now.toLocalDate())
                             .expiredDate(now.plus(properties.attendance().expiredCheck()))
                             .build();
