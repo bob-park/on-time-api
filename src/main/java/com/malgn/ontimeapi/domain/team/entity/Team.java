@@ -22,7 +22,10 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.ToString.Exclude;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.malgn.common.entity.BaseEntity;
+import com.malgn.common.exception.AlreadyExistException;
 
 @ToString
 @Getter
@@ -58,6 +61,12 @@ public class Team extends BaseEntity<Long> {
      * 편의 메서드
      */
     public void addUser(TeamUser teamUser) {
+
+        if (getTeamUsers().stream()
+            .anyMatch(item -> StringUtils.equals(item.getUserUniqueId(), teamUser.getUserUniqueId()))) {
+            throw new AlreadyExistException("userId=" + teamUser.getUserUniqueId());
+        }
+
         teamUser.updateTeam(this);
 
         getTeamUsers().add(teamUser);
