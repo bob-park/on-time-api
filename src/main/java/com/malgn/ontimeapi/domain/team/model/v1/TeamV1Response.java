@@ -8,12 +8,13 @@ import lombok.Builder;
 import com.malgn.ontimeapi.domain.team.entity.Team;
 import com.malgn.ontimeapi.domain.team.entity.TeamUser;
 import com.malgn.ontimeapi.domain.team.model.TeamResponse;
+import com.malgn.ontimeapi.domain.team.model.TeamUserResponse;
 
 @Builder
 public record TeamV1Response(Long id,
                              String name,
                              String description,
-                             List<String> userUniqueIds,
+                             List<TeamUserResponse> teamUsers,
                              LocalDateTime createdDate,
                              String createdBy,
                              LocalDateTime lastModifiedDate,
@@ -29,7 +30,7 @@ public record TeamV1Response(Long id,
             .id(team.getId())
             .name(team.getName())
             .description(team.getDescription())
-            .userUniqueIds(includeUsers ? team.getTeamUsers().stream().map(TeamUser::getUserUniqueId).toList() : null)
+            .teamUsers(includeUsers ? team.getTeamUsers().stream().map(TeamUserV1Response::from).toList() : null)
             .createdDate(team.getCreatedDate())
             .createdBy(team.getCreatedBy())
             .lastModifiedDate(team.getLastModifiedDate())

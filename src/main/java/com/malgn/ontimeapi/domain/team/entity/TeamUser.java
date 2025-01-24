@@ -60,4 +60,11 @@ public class TeamUser {
     public void updateLeader(boolean isLeader) {
         this.isLeader = isLeader;
     }
+
+    /*
+     * custom getter
+     */
+    public boolean isLeader() {
+        return Boolean.TRUE.equals(getIsLeader());
+    }
 }

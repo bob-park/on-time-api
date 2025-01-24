@@ -1,7 +1,9 @@
 package com.malgn.ontimeapi.domain.team.model;
 
-public interface UpdateTeamLeaderRequest {
+public interface UpdateTeamUserRequest {
 
     String userUniqueId();
+
+    Boolean isLeader();
 
 }

@@ -39,4 +39,14 @@ public class TeamUserQueryRepositoryImpl implements TeamUserQueryRepository {
                     teamUser.userUniqueId.eq(userUniqueId.getValue()))
                 .fetchOne());
     }
+
+    @Override
+    public long updateAllNonLeaders(Id<Team, Long> teamId) {
+        return query.update(teamUser)
+            .set(teamUser.isLeader, false)
+            .where(
+                teamUser.team.id.eq(teamId.getValue()),
+                teamUser.isLeader.eq(true))
+            .execute();
+    }
 }

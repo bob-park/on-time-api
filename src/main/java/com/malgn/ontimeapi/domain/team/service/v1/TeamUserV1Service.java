@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.malgn.common.exception.AlreadyExistException;
 import com.malgn.common.exception.NotFoundException;
 import com.malgn.common.model.Id;
@@ -17,10 +19,10 @@ import com.malgn.ontimeapi.domain.team.entity.TeamUser;
 import com.malgn.ontimeapi.domain.team.model.AddTeamUserRequest;
 import com.malgn.ontimeapi.domain.team.model.RemoveTeamUserRequest;
 import com.malgn.ontimeapi.domain.team.model.TeamResponse;
-import com.malgn.ontimeapi.domain.team.model.UpdateTeamLeaderRequest;
+import com.malgn.ontimeapi.domain.team.model.UpdateTeamUserRequest;
 import com.malgn.ontimeapi.domain.team.model.v1.AddTeamUserV1Request;
 import com.malgn.ontimeapi.domain.team.model.v1.RemoveTeamUserV1Request;
-import com.malgn.ontimeapi.domain.team.model.v1.UpdateTeamLeaderV1Request;
+import com.malgn.ontimeapi.domain.team.model.v1.UpdateTeamUserV1Request;
 import com.malgn.ontimeapi.domain.team.repository.TeamRepository;
 import com.malgn.ontimeapi.domain.team.repository.TeamUserRepository;
 import com.malgn.ontimeapi.domain.team.service.TeamUserService;
@@ -99,16 +101,22 @@ public class TeamUserV1Service implements TeamUserService {
 
     @Transactional
     @Override
-    public TeamResponse updateLeader(Id<Team, Long> teamId, UpdateTeamLeaderRequest updateRequest) {
+    public TeamResponse updateTeamUser(Id<Team, Long> teamId, UpdateTeamUserRequest updateRequest) {
 
-        UpdateTeamLeaderV1Request updateV1Request = (UpdateTeamLeaderV1Request)updateRequest;
+        UpdateTeamUserV1Request updateV1Request = (UpdateTeamUserV1Request)updateRequest;
 
-        Team team =
-            teamRepository.findById(teamId.getValue())
-                .orElseThrow(() -> new NotFoundException(teamId));
+        checkArgument(StringUtils.isNotBlank(updateV1Request.userUniqueId()), "userUniqueId must be provided.");
 
+        Id<TeamUser, String> teamUserId = Id.of(TeamUser.class, updateV1Request.userUniqueId());
 
+        TeamUser teamUser =
+            teamUserRepository.getTeamUser(teamId, teamUserId)
+                .orElseThrow(() -> new NotFoundException(teamUserId));
 
-        return null;
+        teamUser.updateLeader(updateV1Request.isLeader());
+
+        log.debug("update team leader: {}", teamUser);
+
+        return from(teamUser.getTeam(), true);
     }
 }
