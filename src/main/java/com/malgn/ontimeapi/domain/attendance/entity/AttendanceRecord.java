@@ -8,6 +8,8 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -41,6 +43,10 @@ public class AttendanceRecord extends BaseEntity<Long> {
     private String userUniqueId;
 
     private LocalDate workingDate;
+
+    @Enumerated(EnumType.STRING)
+    private AttendanceStatus status;
+
     private LocalDateTime clockInTime;
     private LocalDateTime leaveWorkAt;
     private LocalDateTime clockOutTime;
@@ -48,15 +54,15 @@ public class AttendanceRecord extends BaseEntity<Long> {
     private String message;
 
     @Builder
-    private AttendanceRecord(Long id, String userUniqueId, LocalDate workingDate, LocalDateTime clockInTime,
+    private AttendanceRecord(Long id, String userUniqueId, LocalDate workingDate, AttendanceStatus status, LocalDateTime clockInTime,
         LocalDateTime clockOutTime, String message, DayOffType dayOffType) {
+
 
         checkArgument(StringUtils.isNotBlank(userUniqueId), "userUniqueId must be provided.");
         checkArgument(isNotEmpty(workingDate), "workingDate must be provided.");
-        checkArgument(isNotEmpty(clockInTime), "clockInTime must be provided.");
-        checkArgument(isNotEmpty(dayOffType), "dayOffType must be provided.");
 
         this.id = id;
+        this.status = defaultIfNull(status, AttendanceStatus.WAITING);
         this.userUniqueId = userUniqueId;
         this.workingDate = workingDate;
         this.clockInTime = clockInTime;
