@@ -1,6 +1,7 @@
 package com.malgn.ontimeapi.domain.team.entity;
 
 import static com.google.common.base.Preconditions.*;
+import static org.apache.commons.lang3.ObjectUtils.*;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -37,14 +38,16 @@ public class TeamUser {
     private Team team;
 
     private String userUniqueId;
+    private Boolean isLeader;
 
     @Builder
-    private TeamUser(Long id, String userUniqueId) {
+    private TeamUser(Long id, String userUniqueId, Boolean isLeader) {
 
         checkArgument(StringUtils.isNotBlank(userUniqueId), "userUniqueId must be provided.");
 
         this.id = id;
         this.userUniqueId = userUniqueId;
+        this.isLeader = defaultIfNull(isLeader, false);
     }
 
     /*
@@ -52,5 +55,9 @@ public class TeamUser {
      */
     public void updateTeam(Team team) {
         this.team = team;
+    }
+
+    public void updateLeader(boolean isLeader) {
+        this.isLeader = isLeader;
     }
 }

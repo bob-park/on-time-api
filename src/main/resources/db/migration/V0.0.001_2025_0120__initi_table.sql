@@ -36,9 +36,11 @@ create table teams
 -- teams_users
 create table teams_users
 (
-    id             bigserial   not null primary key,
-    user_unique_id varchar(41) not null,
-    team_id        bigint      not null,
+    id             bigserial          not null primary key,
+    user_unique_id varchar(41)        not null,
+    team_id        bigint             not null,
+    is_leader      bool default false not null,
 
     foreign key (team_id) references teams (id)
 );
+
