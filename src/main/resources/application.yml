@@ -85,6 +85,10 @@ malgn:
     enabled: on
     host: ${redis_host:redis://localhost:6379}
 
+## on-time
+on-time:
+  attendance:
+    expired-check: ${expired_attendance_check:10m}
 
 ## logging
 logging:
