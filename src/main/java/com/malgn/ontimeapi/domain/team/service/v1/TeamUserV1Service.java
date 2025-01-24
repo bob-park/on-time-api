@@ -64,7 +64,7 @@ public class TeamUserV1Service implements TeamUserService {
 
         }
 
-        return from(team);
+        return from(team, true);
     }
 
     @Transactional
@@ -92,6 +92,6 @@ public class TeamUserV1Service implements TeamUserService {
 
         }
 
-        return from(team);
+        return from(team, true);
     }
 }

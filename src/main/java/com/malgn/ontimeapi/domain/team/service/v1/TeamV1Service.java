@@ -64,6 +64,6 @@ public class TeamV1Service implements TeamService {
             teamRepository.findById(teamId.getValue())
                 .orElseThrow(() -> new NotFoundException(teamId));
 
-        return from(team);
+        return from(team, true);
     }
 }
