@@ -1,10 +1,13 @@
 package com.malgn.ontimeapi.domain.attendance.provider;
 
+import static org.apache.commons.lang3.ObjectUtils.*;
+
 import java.time.LocalDateTime;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import com.malgn.common.exception.AlreadyExecuteException;
 import com.malgn.common.exception.NotFoundException;
 import com.malgn.common.model.Id;
 import com.malgn.ontimeapi.domain.attendance.entity.AttendanceCheck;
@@ -41,6 +44,10 @@ public class AttendanceClockOutProvider implements AttendanceProvider {
             recordRepository.getClockInByWorkingDate(userUniqueId.getValue(),
                     check.getWorkingDate())
                 .orElseThrow(() -> new NotFoundException("record clock in..."));
+
+        if (isNotEmpty(attendanceRecord.getClockOutTime())) {
+            throw new AlreadyExecuteException();
+        }
 
         attendanceRecord.updateClockOutTime(now);
 

@@ -74,13 +74,14 @@ public class AttendanceRecord extends BaseEntity<Long> {
     /*
      * 편의 메서드
      */
-    public void updateClockOutTime(LocalDateTime clockOutTime) {
-        this.clockOutTime = clockOutTime;
-    }
-
     public void updateClockInTime(LocalDateTime clockInTime) {
         this.clockInTime = clockInTime;
         this.leaveWorkAt = calculateLeaveWorkAt(clockInTime);
+    }
+
+    public void updateClockOutTime(LocalDateTime clockOutTime) {
+        this.clockOutTime = clockOutTime;
+        this.status = getClockOutTime().isAfter(getLeaveWorkAt()) ? AttendanceStatus.SUCCESS : AttendanceStatus.WARNING;
     }
 
     private LocalDateTime calculateLeaveWorkAt(LocalDateTime clockInTime) {

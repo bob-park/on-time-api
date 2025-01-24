@@ -3,11 +3,18 @@ package com.malgn.ontimeapi.domain.attendance.model;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import com.malgn.ontimeapi.domain.attendance.entity.AttendanceStatus;
+import com.malgn.ontimeapi.domain.attendance.entity.DayOffType;
+
 public interface AttendanceRecordResponse {
 
     Long id();
 
     String userId();
+
+    AttendanceStatus status();
+
+    DayOffType dayOffType();
 
     LocalDate workingDate();
 

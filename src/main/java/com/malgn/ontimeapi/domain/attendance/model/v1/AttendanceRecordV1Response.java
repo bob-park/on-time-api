@@ -6,11 +6,15 @@ import java.time.LocalDateTime;
 import lombok.Builder;
 
 import com.malgn.ontimeapi.domain.attendance.entity.AttendanceRecord;
+import com.malgn.ontimeapi.domain.attendance.entity.AttendanceStatus;
+import com.malgn.ontimeapi.domain.attendance.entity.DayOffType;
 import com.malgn.ontimeapi.domain.attendance.model.AttendanceRecordResponse;
 
 @Builder
 public record AttendanceRecordV1Response(Long id,
                                          String userId,
+                                         AttendanceStatus status,
+                                         DayOffType dayOffType,
                                          LocalDate workingDate,
                                          LocalDateTime clockInTime,
                                          LocalDateTime leaveWorkAt,
@@ -26,6 +30,8 @@ public record AttendanceRecordV1Response(Long id,
         return AttendanceRecordV1Response.builder()
             .id(attendanceRecord.getId())
             .userId(attendanceRecord.getUserUniqueId())
+            .status(attendanceRecord.getStatus())
+            .dayOffType(attendanceRecord.getDayOffType())
             .workingDate(attendanceRecord.getWorkingDate())
             .clockInTime(attendanceRecord.getClockInTime())
             .leaveWorkAt(attendanceRecord.getLeaveWorkAt())
