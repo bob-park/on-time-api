@@ -17,8 +17,10 @@ import com.malgn.ontimeapi.domain.team.entity.TeamUser;
 import com.malgn.ontimeapi.domain.team.model.AddTeamUserRequest;
 import com.malgn.ontimeapi.domain.team.model.RemoveTeamUserRequest;
 import com.malgn.ontimeapi.domain.team.model.TeamResponse;
+import com.malgn.ontimeapi.domain.team.model.UpdateTeamLeaderRequest;
 import com.malgn.ontimeapi.domain.team.model.v1.AddTeamUserV1Request;
 import com.malgn.ontimeapi.domain.team.model.v1.RemoveTeamUserV1Request;
+import com.malgn.ontimeapi.domain.team.model.v1.UpdateTeamLeaderV1Request;
 import com.malgn.ontimeapi.domain.team.repository.TeamRepository;
 import com.malgn.ontimeapi.domain.team.repository.TeamUserRepository;
 import com.malgn.ontimeapi.domain.team.service.TeamUserService;
@@ -93,5 +95,20 @@ public class TeamUserV1Service implements TeamUserService {
         }
 
         return from(team, true);
+    }
+
+    @Transactional
+    @Override
+    public TeamResponse updateLeader(Id<Team, Long> teamId, UpdateTeamLeaderRequest updateRequest) {
+
+        UpdateTeamLeaderV1Request updateV1Request = (UpdateTeamLeaderV1Request)updateRequest;
+
+        Team team =
+            teamRepository.findById(teamId.getValue())
+                .orElseThrow(() -> new NotFoundException(teamId));
+
+
+
+        return null;
     }
 }
