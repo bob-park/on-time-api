@@ -37,6 +37,7 @@ public class AttendanceRecordQueryRepositoryImpl implements AttendanceRecordQuer
                 .where(
                     attendanceRecord.userUniqueId.eq(userUniqueId),
                     attendanceRecord.workingDate.eq(workingDate),
+                    attendanceRecord.clockInTime.isNotNull(),
                     attendanceRecord.clockOutTime.isNull())
                 .fetchOne());
     }
