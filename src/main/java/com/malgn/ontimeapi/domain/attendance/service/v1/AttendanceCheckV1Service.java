@@ -47,6 +47,7 @@ public class AttendanceCheckV1Service implements AttendanceCheckService {
                     AttendanceCheck createdCheck =
                         AttendanceCheck.builder()
                             .type(currentV1Request.type())
+                            .subType(currentV1Request.subType())
                             .workingDate(now.toLocalDate())
                             .expiredDate(now.plus(properties.attendance().expiredCheck()))
                             .build();

@@ -6,12 +6,14 @@ import java.time.LocalDateTime;
 import lombok.Builder;
 
 import com.malgn.ontimeapi.domain.attendance.entity.AttendanceCheck;
+import com.malgn.ontimeapi.domain.attendance.entity.AttendanceCheckSubType;
 import com.malgn.ontimeapi.domain.attendance.entity.AttendanceCheckType;
 import com.malgn.ontimeapi.domain.attendance.model.AttendanceCheckResponse;
 
 @Builder
 public record AttendanceCheckV1Response(String id,
                                         AttendanceCheckType type,
+                                        AttendanceCheckSubType subType,
                                         LocalDate workingDate,
                                         LocalDateTime expiredDate,
                                         LocalDateTime createdDate,
@@ -24,6 +26,7 @@ public record AttendanceCheckV1Response(String id,
         return AttendanceCheckV1Response.builder()
             .id(attendanceCheck.getId())
             .type(attendanceCheck.getType())
+            .subType(attendanceCheck.getSubType())
             .workingDate(attendanceCheck.getWorkingDate())
             .expiredDate(attendanceCheck.getExpiredDate())
             .createdDate(attendanceCheck.getCreatedDate())

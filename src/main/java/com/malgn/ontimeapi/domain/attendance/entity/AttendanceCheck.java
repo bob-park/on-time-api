@@ -35,18 +35,24 @@ public class AttendanceCheck extends BaseEntity<String> {
     @Enumerated(EnumType.STRING)
     private AttendanceCheckType type;
 
+    @Enumerated(EnumType.STRING)
+    private AttendanceCheckSubType subType;
+
     private LocalDate workingDate;
     private LocalDateTime expiredDate;
 
     @Builder
-    private AttendanceCheck(String id, AttendanceCheckType type, LocalDate workingDate, LocalDateTime expiredDate) {
+    private AttendanceCheck(String id, AttendanceCheckType type, AttendanceCheckSubType subType, LocalDate workingDate, LocalDateTime expiredDate) {
+
 
         checkArgument(isNotEmpty(type), "type must be provided.");
+        checkArgument(isNotEmpty(subType), "subType must be provided.");
         checkArgument(isNotEmpty(workingDate), "workingDate must be provided.");
         checkArgument(isNotEmpty(expiredDate), "expiredDate must be provided.");
 
         this.id = id;
         this.type = type;
+        this.subType = subType;
         this.workingDate = workingDate;
         this.expiredDate = expiredDate;
     }
