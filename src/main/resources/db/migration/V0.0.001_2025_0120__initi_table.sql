@@ -44,3 +44,14 @@ create table teams_users
     foreign key (team_id) references teams (id)
 );
 
+-- attendances_checks
+create table attendances_checks
+(
+    id                 varchar(41)             not null primary key,
+    working_date       date                    not null,
+    expired_datetime   timestamp               not null,
+    created_date       timestamp default now() not null,
+    created_by         varchar(50)             not null,
+    last_modified_date timestamp,
+    last_modified_by   varchar(50)
+);
