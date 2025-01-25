@@ -15,7 +15,7 @@ import com.malgn.ontimeapi.domain.user.service.v1.UserPositionV1Service;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("v1/user/{uniqueId}/position")
+@RequestMapping("v1/users/{uniqueId}/position")
 public class UserPositionV1Controller {
 
     private final UserPositionV1Service positionService;

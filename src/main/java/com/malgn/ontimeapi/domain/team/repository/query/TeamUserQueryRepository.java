@@ -14,4 +14,6 @@ public interface TeamUserQueryRepository {
 
     long updateAllNonLeaders(Id<Team, Long> teamId);
 
+    Optional<TeamUser> getTeamByUser(String userUniqueId);
+
 }

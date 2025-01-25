@@ -49,4 +49,13 @@ public class TeamUserQueryRepositoryImpl implements TeamUserQueryRepository {
                 teamUser.isLeader.eq(true))
             .execute();
     }
+
+    @Override
+    public Optional<TeamUser> getTeamByUser(String userUniqueId) {
+        return Optional.ofNullable(
+            query.selectFrom(teamUser)
+                .join(teamUser.team, team).fetchJoin()
+                .where(teamUser.userUniqueId.eq(userUniqueId))
+                .fetchOne());
+    }
 }
