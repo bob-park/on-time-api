@@ -31,6 +31,7 @@ import com.malgn.ontimeapi.domain.user.entity.UserPosition;
 import com.malgn.ontimeapi.domain.user.feign.UserFeignClient;
 import com.malgn.ontimeapi.domain.user.model.UserResponse;
 import com.malgn.ontimeapi.domain.user.repository.UserPositionRepository;
+import com.malgn.ontimeapi.utils.DateUtils;
 
 @Slf4j
 public class AttendanceClockInProvider implements AttendanceProvider {
@@ -98,7 +99,9 @@ public class AttendanceClockInProvider implements AttendanceProvider {
                 .orElseThrow(() -> new NotFoundException(TeamUser.class, attendanceRecord.getUserUniqueId()));
 
         String teamUserMessage = parseTeamUserMessage(teamUser);
-        String dateMessage = attendanceRecord.getWorkingDate().format(DEFAULT_FORMAT_DATE);
+        String dateMessage =
+            attendanceRecord.getWorkingDate().format(DEFAULT_FORMAT_DATE)
+                + "(" + DateUtils.getDayOfWeek(attendanceRecord.getWorkingDate().getDayOfWeek().getValue()) + ")";
 
         SendNotificationMessageRequest message =
             SendNotificationMessageRequest.builder()
@@ -151,7 +154,10 @@ public class AttendanceClockInProvider implements AttendanceProvider {
         blocks.add(
             SendNotificationMessageBlockRequest.builder()
                 .field("근무일")
-                .text(attendanceRecord.getWorkingDate().format(DEFAULT_FORMAT_DATE))
+                .text(
+                    attendanceRecord.getWorkingDate().format(DEFAULT_FORMAT_DATE)
+                        + "(" + DateUtils.getDayOfWeek(attendanceRecord.getWorkingDate().getDayOfWeek().getValue())
+                        + ")")
                 .build());
 
         blocks.add(

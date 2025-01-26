@@ -37,13 +37,14 @@ import com.malgn.ontimeapi.domain.user.entity.UserPosition;
 import com.malgn.ontimeapi.domain.user.feign.UserFeignClient;
 import com.malgn.ontimeapi.domain.user.model.UserResponse;
 import com.malgn.ontimeapi.domain.user.repository.UserPositionRepository;
+import com.malgn.ontimeapi.utils.DateUtils;
 
 @Slf4j
 public class AttendanceClockOutProvider implements AttendanceProvider {
 
     private static final String DISPLAY_MESSAGE_TEMPLATE = "%s - %s 퇴근하였습니다.";
 
-    private static final DateTimeFormatter DEFAULT_FORMAT_DATE = DateTimeFormatter.ofPattern("yyyy-MM-dd (E)");
+    private static final DateTimeFormatter DEFAULT_FORMAT_DATE = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final DateTimeFormatter DEFAULT_FORMAT_TIME = DateTimeFormatter.ofPattern("a hh:mm:ss");
 
     private final ApplicationEventPublisher publisher;
@@ -100,7 +101,9 @@ public class AttendanceClockOutProvider implements AttendanceProvider {
                 .orElseThrow(() -> new NotFoundException(TeamUser.class, attendanceRecord.getUserUniqueId()));
 
         String teamUserMessage = parseTeamUserMessage(teamUser);
-        String dateMessage = attendanceRecord.getWorkingDate().format(DEFAULT_FORMAT_DATE);
+        String dateMessage =
+            attendanceRecord.getWorkingDate().format(DEFAULT_FORMAT_DATE)
+                + "(" + DateUtils.getDayOfWeek(attendanceRecord.getWorkingDate().getDayOfWeek().getValue()) + ")";
 
         boolean isCheck = attendanceRecord.getLeaveWorkAt().isBefore(attendanceRecord.getClockOutTime());
 
@@ -156,7 +159,10 @@ public class AttendanceClockOutProvider implements AttendanceProvider {
         blocks.add(
             SendNotificationMessageBlockRequest.builder()
                 .field("근무일")
-                .text(attendanceRecord.getWorkingDate().format(DEFAULT_FORMAT_DATE))
+                .text(
+                    attendanceRecord.getWorkingDate().format(DEFAULT_FORMAT_DATE)
+                        + "(" + DateUtils.getDayOfWeek(attendanceRecord.getWorkingDate().getDayOfWeek().getValue())
+                        + ")")
                 .build());
 
         blocks.add(
