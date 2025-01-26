@@ -84,6 +84,9 @@ malgn:
   redis:
     enabled: on
     host: ${redis_host:redis://localhost:6379}
+  notification:
+    enabled: on
+    host: ${notification_host:http://localhost:8080}
 
 ## on-time
 on-time:
