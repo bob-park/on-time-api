@@ -1,20 +1,20 @@
 package com.malgn.ontimeapi.domain.attendance.provider;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import lombok.Builder;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.context.ApplicationEventPublisher;
 
+import com.google.common.collect.Lists;
+
 import com.malgn.common.exception.AlreadyExistException;
 import com.malgn.common.exception.NotFoundException;
-import com.malgn.common.exception.NotSupportException;
 import com.malgn.common.model.Id;
-import com.malgn.notification.client.NotificationClient;
+import com.malgn.notification.model.SendNotificationMessageBlockRequest;
 import com.malgn.notification.model.SendNotificationMessageRequest;
 import com.malgn.ontimeapi.domain.attendance.entity.AttendanceCheck;
 import com.malgn.ontimeapi.domain.attendance.entity.AttendanceRecord;
@@ -38,8 +38,7 @@ public class AttendanceClockInProvider implements AttendanceProvider {
     private static final String DISPLAY_MESSAGE_TEMPLATE = "%s - %s 출근하였습니다.";
 
     private static final DateTimeFormatter DEFAULT_FORMAT_DATE = DateTimeFormatter.ofPattern("yyyy-MM-dd (E)");
-    private static final DateTimeFormatter DEFAULT_FORMAT_DATETIME =
-        DateTimeFormatter.ofPattern("yyyy-MM-dd (E) HH:mm:ss");
+    private static final DateTimeFormatter DEFAULT_FORMAT_TIME = DateTimeFormatter.ofPattern("a hh:mm:ss");
 
     private final ApplicationEventPublisher publisher;
 
@@ -104,6 +103,7 @@ public class AttendanceClockInProvider implements AttendanceProvider {
         SendNotificationMessageRequest message =
             SendNotificationMessageRequest.builder()
                 .displayMessage(String.format(DISPLAY_MESSAGE_TEMPLATE, teamUserMessage, dateMessage))
+                .fields(parseBlockMessages(attendanceRecord))
                 .build();
 
         publisher.publishEvent(
@@ -142,5 +142,30 @@ public class AttendanceClockInProvider implements AttendanceProvider {
         messageBuilder.append(user.username()).append(" ").append(position.getName());
 
         return messageBuilder.toString();
+    }
+
+    private List<SendNotificationMessageBlockRequest> parseBlockMessages(AttendanceRecord attendanceRecord) {
+
+        List<SendNotificationMessageBlockRequest> blocks = Lists.newArrayList();
+
+        blocks.add(
+            SendNotificationMessageBlockRequest.builder()
+                .field("근무일")
+                .text(attendanceRecord.getWorkingDate().format(DEFAULT_FORMAT_DATE))
+                .build());
+
+        blocks.add(
+            SendNotificationMessageBlockRequest.builder()
+                .field("출근 시간")
+                .text(attendanceRecord.getClockInTime().format(DEFAULT_FORMAT_TIME))
+                .build());
+
+        blocks.add(
+            SendNotificationMessageBlockRequest.builder()
+                .field("퇴근 예정 시간")
+                .text(attendanceRecord.getLeaveWorkAt().format(DEFAULT_FORMAT_TIME))
+                .build());
+
+        return blocks;
     }
 }

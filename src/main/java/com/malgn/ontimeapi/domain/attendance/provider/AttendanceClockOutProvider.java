@@ -2,18 +2,26 @@ package com.malgn.ontimeapi.domain.attendance.provider;
 
 import static org.apache.commons.lang3.ObjectUtils.*;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.context.ApplicationEventPublisher;
 
+import com.google.common.collect.Lists;
+
 import com.malgn.common.exception.AlreadyExecuteException;
 import com.malgn.common.exception.NotFoundException;
 import com.malgn.common.model.Id;
+import com.malgn.notification.model.MessageLevel;
+import com.malgn.notification.model.SendNotificationMessageBlockRequest;
 import com.malgn.notification.model.SendNotificationMessageRequest;
+import com.malgn.ontimeapi.common.timecode.Timecode;
 import com.malgn.ontimeapi.domain.attendance.entity.AttendanceCheck;
 import com.malgn.ontimeapi.domain.attendance.entity.AttendanceRecord;
 import com.malgn.ontimeapi.domain.attendance.entity.AttendanceType;
@@ -36,8 +44,7 @@ public class AttendanceClockOutProvider implements AttendanceProvider {
     private static final String DISPLAY_MESSAGE_TEMPLATE = "%s - %s 퇴근하였습니다.";
 
     private static final DateTimeFormatter DEFAULT_FORMAT_DATE = DateTimeFormatter.ofPattern("yyyy-MM-dd (E)");
-    private static final DateTimeFormatter DEFAULT_FORMAT_DATETIME =
-        DateTimeFormatter.ofPattern("yyyy-MM-dd (E) HH:mm:ss");
+    private static final DateTimeFormatter DEFAULT_FORMAT_TIME = DateTimeFormatter.ofPattern("a hh:mm:ss");
 
     private final ApplicationEventPublisher publisher;
 
@@ -95,9 +102,13 @@ public class AttendanceClockOutProvider implements AttendanceProvider {
         String teamUserMessage = parseTeamUserMessage(teamUser);
         String dateMessage = attendanceRecord.getWorkingDate().format(DEFAULT_FORMAT_DATE);
 
+        boolean isCheck = attendanceRecord.getLeaveWorkAt().isBefore(attendanceRecord.getClockOutTime());
+
         SendNotificationMessageRequest message =
             SendNotificationMessageRequest.builder()
+                .level(isCheck ? MessageLevel.INFO : MessageLevel.WARING)
                 .displayMessage(String.format(DISPLAY_MESSAGE_TEMPLATE, teamUserMessage, dateMessage))
+                .fields(parseBlockMessages(attendanceRecord))
                 .build();
 
         publisher.publishEvent(
@@ -136,5 +147,53 @@ public class AttendanceClockOutProvider implements AttendanceProvider {
         messageBuilder.append(user.username()).append(" ").append(position.getName());
 
         return messageBuilder.toString();
+    }
+
+    private List<SendNotificationMessageBlockRequest> parseBlockMessages(AttendanceRecord attendanceRecord) {
+
+        List<SendNotificationMessageBlockRequest> blocks = Lists.newArrayList();
+
+        blocks.add(
+            SendNotificationMessageBlockRequest.builder()
+                .field("근무일")
+                .text(attendanceRecord.getWorkingDate().format(DEFAULT_FORMAT_DATE))
+                .build());
+
+        blocks.add(
+            SendNotificationMessageBlockRequest.builder()
+                .field("출근 시간")
+                .text(attendanceRecord.getClockInTime().format(DEFAULT_FORMAT_TIME))
+                .build());
+
+        blocks.add(
+            SendNotificationMessageBlockRequest.builder()
+                .field("퇴근 예정 시간")
+                .text(attendanceRecord.getLeaveWorkAt().format(DEFAULT_FORMAT_TIME))
+                .build());
+
+        blocks.add(
+            SendNotificationMessageBlockRequest.builder()
+                .field("퇴근 시간")
+                .text(attendanceRecord.getClockOutTime().format(DEFAULT_FORMAT_TIME))
+                .build());
+
+        Duration workDuration = Duration.between(attendanceRecord.getClockInTime(), attendanceRecord.getClockOutTime());
+        Timecode workTimecode = new Timecode(workDuration.getSeconds());
+
+        blocks.add(
+            SendNotificationMessageBlockRequest.builder()
+                .field("총 근무 시간")
+                .text(workTimecode.toString())
+                .build());
+
+        boolean isCheck = attendanceRecord.getLeaveWorkAt().isBefore(attendanceRecord.getClockOutTime());
+
+        blocks.add(
+            SendNotificationMessageBlockRequest.builder()
+                .field("근무 자세")
+                .text(isCheck ? "정상" : "경고")
+                .build());
+
+        return blocks;
     }
 }

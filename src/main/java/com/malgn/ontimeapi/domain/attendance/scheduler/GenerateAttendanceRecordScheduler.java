@@ -1,7 +1,5 @@
 package com.malgn.ontimeapi.domain.attendance.scheduler;
 
-import static org.apache.commons.lang3.ObjectUtils.*;
-
 import java.time.LocalDate;
 import java.util.List;
 
@@ -13,9 +11,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.malgn.ontimeapi.common.page.SimplePage;
+import com.malgn.common.model.SimplePageImpl;
 import com.malgn.ontimeapi.domain.attendance.entity.AttendanceRecord;
-import com.malgn.ontimeapi.domain.attendance.entity.DayOffType;
 import com.malgn.ontimeapi.domain.attendance.repository.AttendanceRecordRepository;
 import com.malgn.ontimeapi.domain.user.feign.UserFeignClient;
 import com.malgn.ontimeapi.domain.user.model.UserResponse;
@@ -33,7 +30,7 @@ public class GenerateAttendanceRecordScheduler {
     @Transactional
     @Scheduled(cron = "${on-time.attendance.schedule.cron-generate-attendance-record}")
     public void generateAttendanceRecord() {
-        SimplePage<UserResponse> result = userClient.getAll(PageRequest.of(0, 1_000));
+        SimplePageImpl<UserResponse> result = userClient.getAll(PageRequest.of(0, 1_000));
 
         List<UserResponse> users = result.content();
 
