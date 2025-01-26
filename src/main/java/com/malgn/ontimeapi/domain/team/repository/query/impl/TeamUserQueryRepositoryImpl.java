@@ -3,6 +3,7 @@ package com.malgn.ontimeapi.domain.team.repository.query.impl;
 import static com.malgn.ontimeapi.domain.team.entity.QTeam.*;
 import static com.malgn.ontimeapi.domain.team.entity.QTeamUser.*;
 
+import java.util.List;
 import java.util.Optional;
 
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import com.malgn.common.model.Id;
+import com.malgn.ontimeapi.domain.team.entity.QTeamUser;
 import com.malgn.ontimeapi.domain.team.entity.Team;
 import com.malgn.ontimeapi.domain.team.entity.TeamUser;
 import com.malgn.ontimeapi.domain.team.repository.query.TeamUserQueryRepository;
@@ -57,5 +59,15 @@ public class TeamUserQueryRepositoryImpl implements TeamUserQueryRepository {
                 .join(teamUser.team, team).fetchJoin()
                 .where(teamUser.userUniqueId.eq(userUniqueId))
                 .fetchOne());
+    }
+
+    @Override
+    public List<TeamUser> getLeaders(Id<Team, Long> teamId) {
+        return query.selectFrom(teamUser)
+            .join(teamUser.team, team).fetchJoin()
+            .where(
+                team.id.eq(teamId.getValue()),
+                teamUser.isLeader.eq(true))
+            .fetch();
     }
 }

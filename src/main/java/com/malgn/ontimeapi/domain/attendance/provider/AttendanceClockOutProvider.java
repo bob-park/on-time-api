@@ -3,27 +3,62 @@ package com.malgn.ontimeapi.domain.attendance.provider;
 import static org.apache.commons.lang3.ObjectUtils.*;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
-import lombok.RequiredArgsConstructor;
+import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.context.ApplicationEventPublisher;
 
 import com.malgn.common.exception.AlreadyExecuteException;
 import com.malgn.common.exception.NotFoundException;
 import com.malgn.common.model.Id;
+import com.malgn.notification.model.SendNotificationMessageRequest;
 import com.malgn.ontimeapi.domain.attendance.entity.AttendanceCheck;
 import com.malgn.ontimeapi.domain.attendance.entity.AttendanceRecord;
 import com.malgn.ontimeapi.domain.attendance.entity.AttendanceType;
+import com.malgn.ontimeapi.domain.attendance.event.SendMessage;
 import com.malgn.ontimeapi.domain.attendance.exception.ExpiredException;
 import com.malgn.ontimeapi.domain.attendance.repository.AttendanceCheckRepository;
 import com.malgn.ontimeapi.domain.attendance.repository.AttendanceRecordRepository;
+import com.malgn.ontimeapi.domain.position.entity.Position;
+import com.malgn.ontimeapi.domain.team.entity.Team;
+import com.malgn.ontimeapi.domain.team.entity.TeamUser;
+import com.malgn.ontimeapi.domain.team.repository.TeamUserRepository;
+import com.malgn.ontimeapi.domain.user.entity.UserPosition;
+import com.malgn.ontimeapi.domain.user.feign.UserFeignClient;
 import com.malgn.ontimeapi.domain.user.model.UserResponse;
+import com.malgn.ontimeapi.domain.user.repository.UserPositionRepository;
 
 @Slf4j
-@RequiredArgsConstructor
 public class AttendanceClockOutProvider implements AttendanceProvider {
+
+    private static final String DISPLAY_MESSAGE_TEMPLATE = "%s - %s 퇴근하였습니다.";
+
+    private static final DateTimeFormatter DEFAULT_FORMAT_DATE = DateTimeFormatter.ofPattern("yyyy-MM-dd (E)");
+    private static final DateTimeFormatter DEFAULT_FORMAT_DATETIME =
+        DateTimeFormatter.ofPattern("yyyy-MM-dd (E) HH:mm:ss");
+
+    private final ApplicationEventPublisher publisher;
 
     private final AttendanceCheckRepository checkRepository;
     private final AttendanceRecordRepository recordRepository;
+    private final TeamUserRepository teamUserRepository;
+    private final UserPositionRepository userPositionRepository;
+
+    private final UserFeignClient userClient;
+
+    @Builder
+    private AttendanceClockOutProvider(ApplicationEventPublisher publisher, AttendanceCheckRepository checkRepository,
+        AttendanceRecordRepository recordRepository, TeamUserRepository teamUserRepository,
+        UserPositionRepository userPositionRepository, UserFeignClient userClient) {
+        this.publisher = publisher;
+        this.checkRepository = checkRepository;
+        this.recordRepository = recordRepository;
+        this.teamUserRepository = teamUserRepository;
+        this.userPositionRepository = userPositionRepository;
+        this.userClient = userClient;
+    }
 
     @Override
     public AttendanceRecord recordAttendance(Id<AttendanceCheck, String> checkId,
@@ -53,11 +88,53 @@ public class AttendanceClockOutProvider implements AttendanceProvider {
 
         log.debug("clock out user. (userUniqueId={}, time={})", userUniqueId.getValue(), now);
 
+        TeamUser teamUser =
+            teamUserRepository.getTeamByUser(attendanceRecord.getUserUniqueId())
+                .orElseThrow(() -> new NotFoundException(TeamUser.class, attendanceRecord.getUserUniqueId()));
+
+        String teamUserMessage = parseTeamUserMessage(teamUser);
+        String dateMessage = attendanceRecord.getWorkingDate().format(DEFAULT_FORMAT_DATE);
+
+        SendNotificationMessageRequest message =
+            SendNotificationMessageRequest.builder()
+                .displayMessage(String.format(DISPLAY_MESSAGE_TEMPLATE, teamUserMessage, dateMessage))
+                .build();
+
+        publisher.publishEvent(
+            SendMessage.builder()
+                .teamId(Id.of(Team.class, teamUser.getTeam().getId()))
+                .sendRequest(message)
+                .build());
+
         return attendanceRecord;
     }
 
     @Override
     public boolean isSupport(AttendanceType type) {
         return type == AttendanceType.CLOCK_OUT;
+    }
+
+    private String parseTeamUserMessage(TeamUser teamUser) {
+
+        StringBuilder messageBuilder = new StringBuilder();
+
+        UserPosition userPosition =
+            userPositionRepository.getUserPosition(teamUser.getUserUniqueId())
+                .orElseThrow(() -> new NotFoundException(UserPosition.class, teamUser.getUserUniqueId()));
+
+        UserResponse user = userClient.getById(teamUser.getUserUniqueId());
+        Team team = teamUser.getTeam();
+        Position position = userPosition.getPosition();
+
+        // add team
+        messageBuilder.append(team.getName());
+
+        if (teamUser.isLeader()) {
+            messageBuilder.append("(").append("팀장").append(") ");
+        }
+
+        messageBuilder.append(user.username()).append(" ").append(position.getName());
+
+        return messageBuilder.toString();
     }
 }

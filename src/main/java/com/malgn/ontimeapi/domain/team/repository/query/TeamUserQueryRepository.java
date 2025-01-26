@@ -1,5 +1,6 @@
 package com.malgn.ontimeapi.domain.team.repository.query;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.malgn.common.model.Id;
@@ -15,5 +16,7 @@ public interface TeamUserQueryRepository {
     long updateAllNonLeaders(Id<Team, Long> teamId);
 
     Optional<TeamUser> getTeamByUser(String userUniqueId);
+
+    List<TeamUser> getLeaders(Id<Team, Long> teamId);
 
 }

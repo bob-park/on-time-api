@@ -6,26 +6,18 @@ import static com.malgn.ontimeapi.domain.attendance.model.v1.AttendanceRecordV1R
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.google.common.base.Preconditions;
-
-import com.malgn.common.exception.NotFoundException;
 import com.malgn.common.model.Id;
 import com.malgn.ontimeapi.domain.attendance.entity.AttendanceCheck;
 import com.malgn.ontimeapi.domain.attendance.entity.AttendanceRecord;
 import com.malgn.ontimeapi.domain.attendance.model.AttendanceRecordRequest;
 import com.malgn.ontimeapi.domain.attendance.model.AttendanceRecordResponse;
 import com.malgn.ontimeapi.domain.attendance.model.v1.AttendanceRecordV1Request;
-import com.malgn.ontimeapi.domain.attendance.model.v1.AttendanceRecordV1Response;
 import com.malgn.ontimeapi.domain.attendance.provider.DelegatingAttendanceProvider;
-import com.malgn.ontimeapi.domain.attendance.repository.AttendanceCheckRepository;
-import com.malgn.ontimeapi.domain.attendance.repository.AttendanceRecordRepository;
 import com.malgn.ontimeapi.domain.attendance.service.AttendanceRecordService;
 import com.malgn.ontimeapi.domain.user.feign.UserFeignClient;
 import com.malgn.ontimeapi.domain.user.model.UserResponse;

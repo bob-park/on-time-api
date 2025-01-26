@@ -1,4 +1,4 @@
-package com.malgn.ontimeapi.domain.attendance.event.listener;
+package com.malgn.ontimeapi.domain.attendance.event;
 
 import lombok.Builder;
 
@@ -8,5 +8,5 @@ import com.malgn.ontimeapi.domain.team.entity.Team;
 
 @Builder
 public record SendMessage(Id<Team, Long> teamId,
-                          SendNotificationMessageRequest message) {
+                          SendNotificationMessageRequest sendRequest) {
 }
