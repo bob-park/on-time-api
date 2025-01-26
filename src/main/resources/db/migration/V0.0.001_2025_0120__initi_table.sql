@@ -75,3 +75,11 @@ create table attendances_records
     last_modified_date timestamp,
     last_modified_by   varchar(50)
 );
+
+-- users_notification_providers
+create table users_notification_providers
+(
+    id             bigserial   not null primary key,
+    user_unique_id varchar(41) not null,
+    provider_id    bigint      not null
+);
