@@ -12,7 +12,7 @@ import com.malgn.ontimeapi.domain.attendance.model.AttendanceRecordResponse;
 
 @Builder
 public record AttendanceRecordV1Response(Long id,
-                                         String userId,
+                                         String userUniqueId,
                                          AttendanceStatus status,
                                          DayOffType dayOffType,
                                          LocalDate workingDate,
@@ -29,7 +29,7 @@ public record AttendanceRecordV1Response(Long id,
     public static AttendanceRecordResponse from(AttendanceRecord attendanceRecord) {
         return AttendanceRecordV1Response.builder()
             .id(attendanceRecord.getId())
-            .userId(attendanceRecord.getUserUniqueId())
+            .userUniqueId(attendanceRecord.getUserUniqueId())
             .status(attendanceRecord.getStatus())
             .dayOffType(attendanceRecord.getDayOffType())
             .workingDate(attendanceRecord.getWorkingDate())

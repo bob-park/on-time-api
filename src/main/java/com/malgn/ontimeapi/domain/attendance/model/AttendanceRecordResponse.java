@@ -10,7 +10,7 @@ public interface AttendanceRecordResponse {
 
     Long id();
 
-    String userId();
+    String userUniqueId();
 
     AttendanceStatus status();
 

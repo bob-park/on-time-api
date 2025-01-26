@@ -41,11 +41,9 @@ public class GenerateAttendanceRecordScheduler {
 
         for (UserResponse user : users) {
 
-            AttendanceRecord prevRecord =
-                recordRepository.getWaitingByWorkingDate(user.uniqueId(), now)
-                    .orElse(null);
+            boolean isExist = recordRepository.existRecord(user.uniqueId(), now);
 
-            if (isNotEmpty(prevRecord)) {
+            if (isExist) {
                 continue;
             }
 

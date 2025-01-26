@@ -1,6 +1,7 @@
 package com.malgn.ontimeapi.domain.attendance.repository.query.impl;
 
 import static com.malgn.ontimeapi.domain.attendance.entity.QAttendanceRecord.*;
+import static org.apache.commons.lang3.ObjectUtils.*;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -18,6 +19,18 @@ import com.malgn.ontimeapi.domain.attendance.repository.query.AttendanceRecordQu
 public class AttendanceRecordQueryRepositoryImpl implements AttendanceRecordQueryRepository {
 
     private final JPAQueryFactory query;
+
+    @Override
+    public boolean existRecord(String userUniqueId, LocalDate workingDate) {
+        Long result =
+            query.select(attendanceRecord.id.count()).from(attendanceRecord)
+                .where(
+                    attendanceRecord.userUniqueId.eq(userUniqueId),
+                    attendanceRecord.workingDate.eq(workingDate))
+                .fetchOne();
+
+        return defaultIfNull(result, 0L) > 0;
+    }
 
     @Override
     public Optional<AttendanceRecord> getWaitingByWorkingDate(String userUniqueId, LocalDate workingDate) {
