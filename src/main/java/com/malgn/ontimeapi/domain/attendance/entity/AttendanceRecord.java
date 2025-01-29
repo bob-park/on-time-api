@@ -93,7 +93,7 @@ public class AttendanceRecord extends BaseEntity<Long> {
 
         switch (getDayOffType()) {
             case null -> plusHours += HOURS_DAY_ALL;
-            case HALF_DAY_OFF -> plusHours += HOURS_HALF_DAY;
+            case AM_HALF_DAY_OFF,PM_HALF_DAY_OFF -> plusHours += HOURS_HALF_DAY;
             default -> throw new NotSupportException(dayOffType.name());
         }
 
