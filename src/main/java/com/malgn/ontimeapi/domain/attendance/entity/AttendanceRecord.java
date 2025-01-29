@@ -106,9 +106,9 @@ public class AttendanceRecord extends BaseEntity<Long> {
                 .plusHours(plusHours);
 
         // 09:00 이후 출근인 경우
-        if (((getDayOffType() == null || getDayOffType() == DayOffType.AM_HALF_DAY_OFF) &&
+        if (((getDayOffType() == null || getDayOffType() == DayOffType.PM_HALF_DAY_OFF) &&
             clockInTime.toLocalTime().isAfter(DEFAULT_ALL_DAY_CLOCK_IN_TIME))
-            || (getDayOffType() == DayOffType.PM_HALF_DAY_OFF &&
+            || (getDayOffType() == DayOffType.AM_HALF_DAY_OFF &&
             clockInTime.toLocalTime().isAfter(DEFAULT_HALF_DAY_CLOCK_IN_TIME))) {
             int minute = clockInTime.getMinute();
             int tempMinute = minute % 10;
