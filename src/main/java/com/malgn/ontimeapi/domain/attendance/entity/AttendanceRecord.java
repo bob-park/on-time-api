@@ -6,7 +6,6 @@ import static org.apache.commons.lang3.ObjectUtils.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.List;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -101,6 +100,11 @@ public class AttendanceRecord extends BaseEntity<Long> {
             default -> throw new NotSupportException(dayOffType.name());
         }
 
+        LocalDateTime calculateClockOutTime =
+            clockInTime.toLocalDate()
+                .atTime(clockInTime.getHour(), 0, 0)
+                .plusHours(plusHours);
+
         // 09:00 이후 출근인 경우
         if (clockInTime.toLocalTime().isAfter(DEFAULT_CLOCK_IN_TIME)) {
             int minute = clockInTime.getMinute();
@@ -112,15 +116,11 @@ public class AttendanceRecord extends BaseEntity<Long> {
                 plusMinutes = ((minute / 10) + 1) * 10;
             }
 
-            return clockInTime.toLocalDate()
-                .atTime(clockInTime.getHour(), 0, 0)
-                .plusHours(plusHours).plusMinutes(plusMinutes);
+            return calculateClockOutTime.plusMinutes(plusMinutes);
         }
 
         // 09:00 이전인 경우
-        return clockInTime.toLocalDate()
-            .atTime(clockInTime.getHour(), 0, 0)
-            .plusHours(plusHours);
+        return calculateClockOutTime;
 
     }
 
