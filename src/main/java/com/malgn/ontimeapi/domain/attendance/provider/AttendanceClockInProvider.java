@@ -38,7 +38,7 @@ public class AttendanceClockInProvider implements AttendanceProvider {
 
     private static final String DISPLAY_MESSAGE_TEMPLATE = "%s - %s 출근하였습니다.";
 
-    private static final DateTimeFormatter DEFAULT_FORMAT_DATE = DateTimeFormatter.ofPattern("yyyy-MM-dd (E)");
+    private static final DateTimeFormatter DEFAULT_FORMAT_DATE = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final DateTimeFormatter DEFAULT_FORMAT_TIME = DateTimeFormatter.ofPattern("a hh:mm:ss");
 
     private final ApplicationEventPublisher publisher;
