@@ -57,8 +57,9 @@ spring:
         config:
           default:
             logger-level: basic
-          adams-sns-asset:
-            url: ${adams_sns_host:http://adams-sns-api:8080}
+  threads:
+    virtual:
+      enabled: on
 
 ## eureka
 eureka:
@@ -72,14 +73,27 @@ eureka:
     service-url:
       defaultZone: ${discovery_host:http://localhost:8761/eureka}
 
+
 ## malgn
 malgn:
   enabled: on
-  jpa:
-    enabled: on
+  auth:
+    user:
+      enabled: on
+      host: ${auth-user-host:http://localhost:8080}
   redis:
     enabled: on
     host: ${redis_host:redis://localhost:6379}
+  notification:
+    enabled: on
+    host: ${notification_host:http://localhost:8080}
+
+## on-time
+on-time:
+  attendance:
+    expired-check: ${expired_attendance_check:10m}
+    schedule:
+      cron-generate-attendance-record: ${cron_generate_attendance_record:0 1 0 * * *}
 
 ## logging
 logging:

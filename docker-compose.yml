@@ -1,0 +1,10 @@
+services:
+  on-time-api:
+    container_name: on-time-api
+    image: ghcr.io/bob-park/on-time-api
+    build:
+      dockerfile: ./Dockerfile
+      x-bake:
+        platforms:
+          - linux/amd64
+          - linux/arm64
