@@ -36,8 +36,8 @@ public class AttendanceRecord extends BaseEntity<Long> {
     private static final int HOURS_DAY_ALL = 8;
     private static final int HOURS_HALF_DAY = 4;
 
-    private static final LocalTime DEFAULT_CLOCK_IN_TIME = LocalTime.of(9, 0);
-    private static final LocalTime DEFAULT_CLOCK_OUT_TIME = LocalTime.of(18, 0);
+    private static final LocalTime DEFAULT_ALL_DAY_CLOCK_IN_TIME = LocalTime.of(9, 0);
+    private static final LocalTime DEFAULT_HALF_DAY_CLOCK_IN_TIME = LocalTime.of(14, 0);
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -106,7 +106,10 @@ public class AttendanceRecord extends BaseEntity<Long> {
                 .plusHours(plusHours);
 
         // 09:00 이후 출근인 경우
-        if (clockInTime.toLocalTime().isAfter(DEFAULT_CLOCK_IN_TIME)) {
+        if (((getDayOffType() == null || getDayOffType() == DayOffType.AM_HALF_DAY_OFF) &&
+            clockInTime.toLocalTime().isAfter(DEFAULT_ALL_DAY_CLOCK_IN_TIME))
+            || (getDayOffType() == DayOffType.PM_HALF_DAY_OFF &&
+            clockInTime.toLocalTime().isAfter(DEFAULT_HALF_DAY_CLOCK_IN_TIME))) {
             int minute = clockInTime.getMinute();
             int tempMinute = minute % 10;
 
