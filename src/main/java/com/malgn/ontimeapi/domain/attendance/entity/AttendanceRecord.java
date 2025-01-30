@@ -115,7 +115,7 @@ public class AttendanceRecord extends BaseEntity<Long> {
 
             int plusMinutes = 0;
 
-            if (tempMinute > 0) {
+            if (minute > 0 && tempMinute > 0) {
                 plusMinutes = ((minute / 10) + 1) * 10;
             }
 
