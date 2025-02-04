@@ -25,6 +25,8 @@ public record AttendanceGpsV1Response(Long id,
             .id(gps.getId())
             .name(gps.getName())
             .description(gps.getDescription())
+            .latitude(gps.getLatitude())
+            .longitude(gps.getLongitude())
             .createdDate(gps.getCreatedDate())
             .createdBy(gps.getCreatedBy())
             .lastModifiedDate(gps.getLastModifiedDate())
