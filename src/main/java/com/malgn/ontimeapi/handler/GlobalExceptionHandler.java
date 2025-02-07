@@ -26,7 +26,7 @@ public class GlobalExceptionHandler {
     public <T> ApiResult<T> expired(Exception e) {
         log.error(e.getMessage());
 
-        return error("EXPIRED", "Expired.", e);
+        return error("BAD_REQUEST", "bad request.", e);
     }
 
     @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
