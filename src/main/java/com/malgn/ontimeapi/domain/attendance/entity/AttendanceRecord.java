@@ -7,8 +7,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
+import java.time.temporal.ChronoField;
 import java.util.List;
 
 import jakarta.persistence.Entity;
@@ -40,6 +39,7 @@ public class AttendanceRecord extends BaseEntity<Long> {
     private static final int HOURS_HALF_DAY = 4;
 
     private static final List<Integer> EXCLUDE_DAY_OF_WEEKS = List.of(6, 7);
+    private static final List<Integer> DEFAULT_FAMILY_DAY_WEEKS = List.of(1, 3);
 
     private static final LocalTime DEFAULT_ALL_DAY_CLOCK_IN_TIME = LocalTime.of(9, 0);
     private static final LocalTime DEFAULT_HALF_DAY_CLOCK_IN_TIME = LocalTime.of(14, 0);
@@ -97,9 +97,8 @@ public class AttendanceRecord extends BaseEntity<Long> {
 
     private LocalDateTime calculateLeaveWorkAt(LocalDateTime clockInTime) {
 
-        boolean isAm = clockInTime.toLocalTime().isBefore(LocalTime.NOON);
-
         int dayOfWeek = getWorkingDate().getDayOfWeek().getValue();
+        int weekCountOfMonth = getWorkingDate().get(ChronoField.ALIGNED_WEEK_OF_MONTH);
 
         // 주말인 경우 적용 제외
         if (EXCLUDE_DAY_OF_WEEKS.contains(dayOfWeek)) {
@@ -109,6 +108,11 @@ public class AttendanceRecord extends BaseEntity<Long> {
         LocalTime calculateLeaveAt = DEFAULT_ALL_DAY_CLOCK_OUT_TIME;
 
         if (getDayOffType() == DayOffType.PM_HALF_DAY_OFF) {
+            calculateLeaveAt = DEFAULT_PM_HALF_DAY_CLOCK_OUT_TIME;
+        }
+
+        // family day 적용
+        if (getDayOffType() == null && DEFAULT_FAMILY_DAY_WEEKS.contains(weekCountOfMonth)) {
             calculateLeaveAt = DEFAULT_PM_HALF_DAY_CLOCK_OUT_TIME;
         }
 
