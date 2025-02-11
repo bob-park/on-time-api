@@ -2,7 +2,6 @@ package com.malgn.ontimeapi.domain.attendance.controller.v1;
 
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,7 +15,6 @@ import com.malgn.ontimeapi.domain.attendance.service.v1.AttendanceCheckV1Service
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("v1/attendance/check")
-@PreAuthorize("hasRole('MANAGER')")
 public class AttendanceCheckV1Controller {
 
     private static final String LOCK_KEY = "current_attendance_check";

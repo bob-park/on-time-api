@@ -3,9 +3,12 @@ package com.malgn.ontimeapi.domain.attendance.entity;
 import static com.google.common.base.Preconditions.*;
 import static org.apache.commons.lang3.ObjectUtils.*;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoField;
+import java.util.List;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -24,7 +27,6 @@ import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
 
 import com.malgn.common.entity.BaseEntity;
-import com.malgn.common.exception.NotSupportException;
 
 @ToString
 @Getter
@@ -35,6 +37,15 @@ public class AttendanceRecord extends BaseEntity<Long> {
 
     private static final int HOURS_DAY_ALL = 8;
     private static final int HOURS_HALF_DAY = 4;
+
+    private static final List<Integer> EXCLUDE_DAY_OF_WEEKS = List.of(6, 7);
+    private static final List<Integer> DEFAULT_FAMILY_DAY_WEEKS = List.of(1, 3);
+
+    private static final LocalTime DEFAULT_ALL_DAY_CLOCK_IN_TIME = LocalTime.of(9, 0);
+    private static final LocalTime DEFAULT_HALF_DAY_CLOCK_IN_TIME = LocalTime.of(14, 0);
+
+    private static final LocalTime DEFAULT_ALL_DAY_CLOCK_OUT_TIME = LocalTime.of(18, 0);
+    private static final LocalTime DEFAULT_PM_HALF_DAY_CLOCK_OUT_TIME = LocalTime.of(14, 0);
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -86,29 +97,52 @@ public class AttendanceRecord extends BaseEntity<Long> {
 
     private LocalDateTime calculateLeaveWorkAt(LocalDateTime clockInTime) {
 
-        boolean isAm = clockInTime.toLocalTime().isBefore(LocalTime.NOON);
+        int dayOfWeek = getWorkingDate().getDayOfWeek().getValue();
+        int weekCountOfMonth = getWorkingDate().get(ChronoField.ALIGNED_WEEK_OF_MONTH);
 
-        // 점심시간 포함 여부
-        int plusHours = isAm ? 1 : 0;
-
-        switch (getDayOffType()) {
-            case null -> plusHours += HOURS_DAY_ALL;
-            case AM_HALF_DAY_OFF,PM_HALF_DAY_OFF -> plusHours += HOURS_HALF_DAY;
-            default -> throw new NotSupportException(dayOffType.name());
+        // 주말인 경우 적용 제외
+        if (EXCLUDE_DAY_OF_WEEKS.contains(dayOfWeek)) {
+            return getWorkingDate().atTime(clockInTime.toLocalTime());
         }
 
-        int minute = clockInTime.getMinute();
-        int tempMinute = minute % 10;
+        LocalTime calculateLeaveAt = DEFAULT_ALL_DAY_CLOCK_OUT_TIME;
 
-        int plusMinutes = 0;
-
-        if (tempMinute > 0) {
-            plusMinutes = ((minute / 10) + 1) * 10;
+        if (getDayOffType() == DayOffType.PM_HALF_DAY_OFF) {
+            calculateLeaveAt = DEFAULT_PM_HALF_DAY_CLOCK_OUT_TIME;
         }
 
-        return clockInTime.toLocalDate()
-            .atTime(clockInTime.getHour(), 0, 0)
-            .plusHours(plusHours).plusMinutes(plusMinutes);
+        // family day 적용
+        if (getDayOffType() == null && DEFAULT_FAMILY_DAY_WEEKS.contains(weekCountOfMonth)) {
+            calculateLeaveAt = DEFAULT_PM_HALF_DAY_CLOCK_OUT_TIME;
+        }
+
+        // 퇴근해야할 시간 + (출근해야할 시간 - 출근시간)
+        LocalTime time = DEFAULT_ALL_DAY_CLOCK_IN_TIME;
+
+        if (getDayOffType() == DayOffType.AM_HALF_DAY_OFF) {
+            time = DEFAULT_HALF_DAY_CLOCK_IN_TIME;
+        }
+
+        long plusMinutes = 0;
+
+        if (getWorkingDate().atTime(time).isBefore(clockInTime)) {
+            Duration between = Duration.between(clockInTime.toLocalTime(), time);
+
+            long minutes = clockInTime.getMinute();
+
+            long betweenSeconds = between.abs().getSeconds();
+            long plusHours = betweenSeconds / 3_600 % 24;
+
+            plusMinutes += plusHours * 60;
+
+            if (minutes > 0) {
+                plusMinutes += ((minutes / 10) + 1) * 10;
+            }
+
+        }
+
+        return getWorkingDate().atTime(calculateLeaveAt)
+            .plusMinutes(plusMinutes);
     }
 
 }

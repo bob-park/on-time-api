@@ -136,7 +136,7 @@ public class AttendanceClockInProvider implements AttendanceProvider {
         Position position = userPosition.getPosition();
 
         // add team
-        messageBuilder.append(team.getName());
+        messageBuilder.append(team.getName()).append(" ");
 
         if (teamUser.isLeader()) {
             messageBuilder.append("(").append("팀장").append(") ");

@@ -3,6 +3,8 @@ package com.malgn.ontimeapi.domain.attendance.service.v1;
 import static com.google.common.base.Preconditions.*;
 import static com.malgn.ontimeapi.domain.attendance.model.v1.AttendanceRecordV1Response.*;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ import com.malgn.ontimeapi.domain.attendance.model.v1.AttendanceRecordV1Request;
 import com.malgn.ontimeapi.domain.attendance.model.v1.AttendanceRecordV1Response;
 import com.malgn.ontimeapi.domain.attendance.model.v1.GetAttendanceRecordV1Request;
 import com.malgn.ontimeapi.domain.attendance.provider.DelegatingAttendanceProvider;
+import com.malgn.ontimeapi.domain.attendance.repository.AttendanceGpsRepository;
 import com.malgn.ontimeapi.domain.attendance.repository.AttendanceRecordRepository;
 import com.malgn.ontimeapi.domain.attendance.service.AttendanceRecordService;
 import com.malgn.ontimeapi.domain.user.feign.UserFeignClient;
@@ -39,6 +42,7 @@ public class AttendanceRecordV1Service implements AttendanceRecordService {
 
     private final DelegatingAttendanceProvider provider;
     private final AttendanceRecordRepository attendanceRecordRepository;
+    private final AttendanceGpsRepository attendanceGpsRepository;
 
     @Transactional
     @Override
@@ -62,6 +66,7 @@ public class AttendanceRecordV1Service implements AttendanceRecordService {
         return from(attendanceRecord);
     }
 
+
     @Override
     public List<AttendanceRecordResponse> getRecords(GetAttendanceRecordRequest getRequest) {
 
@@ -74,6 +79,10 @@ public class AttendanceRecordV1Service implements AttendanceRecordService {
         return result.stream()
             .map(AttendanceRecordV1Response::from)
             .toList();
+    }
+
+    private BigDecimal round(BigDecimal value) {
+        return value.setScale(5, RoundingMode.HALF_UP);
     }
 
 }

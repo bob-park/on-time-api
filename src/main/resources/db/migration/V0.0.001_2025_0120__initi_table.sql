@@ -58,6 +58,19 @@ create table attendances_checks
     last_modified_by   varchar(50)
 );
 
+create table attendances_gps
+(
+    id                 bigserial               not null primary key,
+    name               varchar(50)             not null,
+    description        text,
+    latitude           numeric(10, 5)          not null,
+    longitude          numeric(10, 5)          not null,
+    created_date       timestamp default now() not null,
+    created_by         varchar(50)             not null,
+    last_modified_date timestamp,
+    last_modified_by   varchar(50)
+);
+
 -- attendances_records
 create table attendances_records
 (
