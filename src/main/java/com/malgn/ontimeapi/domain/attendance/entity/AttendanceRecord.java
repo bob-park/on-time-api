@@ -112,7 +112,7 @@ public class AttendanceRecord extends BaseEntity<Long> {
         }
 
         // family day 적용
-        if (getDayOffType() == null && DEFAULT_FAMILY_DAY_WEEKS.contains(weekCountOfMonth)) {
+        if (getDayOffType() == null && DEFAULT_FAMILY_DAY_WEEKS.contains(weekCountOfMonth) && dayOfWeek == 5) {
             calculateLeaveAt = DEFAULT_PM_HALF_DAY_CLOCK_OUT_TIME;
         }
 
