@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.malgn.lock.RedisNamedLockProvider;
+import com.malgn.lock.annotation.DistributedLock;
 import com.malgn.ontimeapi.domain.attendance.model.AttendanceCheckResponse;
 import com.malgn.ontimeapi.domain.attendance.model.v1.CurrentV1Request;
 import com.malgn.ontimeapi.domain.attendance.service.v1.AttendanceCheckV1Service;
@@ -21,11 +22,10 @@ public class AttendanceCheckV1Controller {
 
     private final AttendanceCheckV1Service attendanceCheckService;
 
-    private final RedisNamedLockProvider lockProvider;
-
+    @DistributedLock(key = LOCK_KEY)
     @PostMapping(path = "current")
     public AttendanceCheckResponse currentAttendanceCheck(@RequestBody CurrentV1Request currentRequest) {
-        return lockProvider.getLock(LOCK_KEY, () -> attendanceCheckService.currentCheck(currentRequest));
+        return attendanceCheckService.currentCheck(currentRequest);
     }
 
 }
