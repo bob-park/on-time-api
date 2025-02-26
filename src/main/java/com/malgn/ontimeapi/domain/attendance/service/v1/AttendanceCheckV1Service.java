@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.malgn.common.model.Id;
+import com.malgn.lock.annotation.DistributedLock;
 import com.malgn.ontimeapi.configure.ontime.properties.OnTimeProperties;
 import com.malgn.ontimeapi.domain.attendance.entity.AttendanceCheck;
 import com.malgn.ontimeapi.domain.attendance.model.AttendanceCheckResponse;
@@ -27,10 +28,13 @@ import com.malgn.ontimeapi.domain.attendance.service.AttendanceCheckService;
 @Transactional(readOnly = true)
 public class AttendanceCheckV1Service implements AttendanceCheckService {
 
+    private static final String LOCK_KEY = "current_attendance_check";
+
     private final OnTimeProperties properties;
 
     private final AttendanceCheckRepository attendanceCheckRepository;
 
+    @DistributedLock(key = LOCK_KEY)
     @Transactional
     @Override
     public AttendanceCheckResponse currentCheck(CurrentRequest currentRequest) {
