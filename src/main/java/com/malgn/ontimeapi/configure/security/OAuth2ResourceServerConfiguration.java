@@ -31,6 +31,7 @@ import com.google.common.collect.Maps;
 
 import com.malgn.auth.client.RoleClient;
 import com.malgn.auth.model.RoleResponse;
+import com.malgn.common.utils.role.RoleUtils;
 import com.malgn.ontimeapi.configure.security.converter.JwtRoleGrantAuthoritiesConverter;
 import com.malgn.ontimeapi.configure.security.handler.RestAccessDeniedHandler;
 import com.malgn.ontimeapi.configure.security.handler.RestAuthenticationEntryPoint;
@@ -118,29 +119,12 @@ public class OAuth2ResourceServerConfiguration {
 
         List<RoleResponse> roles = roleClient.getAll();
 
-        Map<String, List<String>> roleHierarchyMap = parseRoleHierarchyMap(roles);
-        String rolesHierarchyStr = RoleHierarchyUtils.roleHierarchyFromMap(roleHierarchyMap);
+        Map<String, List<String>> roleHierarchyMap = RoleUtils.parseRoleHierarchyMap(roles);
+        String rolesHierarchyStr = RoleUtils.fromHierarchy(roleHierarchyMap);
 
         log.debug("role hierarchy=\n{}", rolesHierarchyStr);
 
         return RoleHierarchyImpl.fromHierarchy(rolesHierarchyStr);
     }
 
-    private Map<String, List<String>> parseRoleHierarchyMap(final List<RoleResponse> roles) {
-
-        Map<String, List<String>> result = Maps.newHashMap();
-
-        for (RoleResponse role : roles) {
-
-            if (role.children().isEmpty()) {
-                continue;
-            }
-
-            List<String> children = role.children().stream().map(item -> item.type().name()).toList();
-
-            result.put(role.type().name(), Lists.newArrayList(children));
-        }
-
-        return result;
-    }
 }

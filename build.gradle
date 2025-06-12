@@ -13,7 +13,7 @@ java {
 }
 
 ext {
-    malgnStarterVersion = "1.1.5-RC1-2025.06.10"
+    malgnStarterVersion = "1.1.5-RC2-2025.06.12"
 
 
     springCloudVersion = '2025.0.0'
