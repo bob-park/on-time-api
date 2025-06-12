@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.4.1'
+    id 'org.springframework.boot' version '3.5.0'
     id 'io.spring.dependency-management' version '1.1.7'
 }
 
@@ -13,13 +13,14 @@ java {
 }
 
 ext {
-    malgnStarterVersion = "1.0.3-RC1-2025.02.26"
+    malgnStarterVersion = "1.1.5-RC1-2025.06.10"
 
-    springCloudVersion = '2024.0.0'
-    springCloudNetflixVersion = '4.2.0'
+
+    springCloudVersion = '2025.0.0'
+    springCloudNetflixVersion = '4.3.0'
 
     queryDslVersion = "5.0.0"
-    lombokVersion = "1.18.36"
+    lombokVersion = "1.18.38"
 }
 
 

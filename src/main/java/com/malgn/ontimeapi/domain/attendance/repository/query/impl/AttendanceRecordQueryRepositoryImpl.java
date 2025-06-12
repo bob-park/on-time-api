@@ -22,6 +22,7 @@ import com.malgn.ontimeapi.domain.attendance.entity.DayOffType;
 import com.malgn.ontimeapi.domain.attendance.entity.QAttendanceRecord;
 import com.malgn.ontimeapi.domain.attendance.model.GetAttendanceRecordRequest;
 import com.malgn.ontimeapi.domain.attendance.model.v1.GetAttendanceRecordV1Request;
+import com.malgn.ontimeapi.domain.attendance.model.v2.GetAttendanceRecordRequestV2;
 import com.malgn.ontimeapi.domain.attendance.repository.query.AttendanceRecordQueryRepository;
 
 @RequiredArgsConstructor
@@ -86,6 +87,17 @@ public class AttendanceRecordQueryRepositoryImpl implements AttendanceRecordQuer
                 .and(loeWorkingDate(getV1Request.endDate()))
                 .and(eqStatus(getV1Request.status()))
                 .and(eqDayOffType(getV1Request.dayOffType()));
+        }
+
+        if (getRequest.getClass().isAssignableFrom(GetAttendanceRecordRequestV2.class)) {
+            // v2
+            GetAttendanceRecordRequestV2 getV2Request = (GetAttendanceRecordRequestV2)getRequest;
+
+            builder.and(eqUserUniqueId(getV2Request.userUniqueId()))
+                .and(goeWorkingDate(getV2Request.startDate()))
+                .and(loeWorkingDate(getV2Request.endDate()))
+                .and(eqStatus(getV2Request.status()))
+                .and(eqDayOffType(getV2Request.dayOffType()));
         }
 
         return builder;

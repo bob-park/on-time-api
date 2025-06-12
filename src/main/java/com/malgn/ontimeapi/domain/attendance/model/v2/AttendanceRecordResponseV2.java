@@ -1,4 +1,4 @@
-package com.malgn.ontimeapi.domain.attendance.model.v1;
+package com.malgn.ontimeapi.domain.attendance.model.v2;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -13,14 +13,19 @@ import com.malgn.ontimeapi.domain.attendance.entity.DayOffType;
 import com.malgn.ontimeapi.domain.attendance.model.AttendanceRecordResponse;
 
 @Builder
-public record AttendanceRecordV1Response(Long id,
+public record AttendanceRecordResponseV2(Long id,
                                          String userUniqueId,
                                          AttendanceStatus status,
                                          DayOffType dayOffType,
+                                         AttendanceRecordWorkType workType,
                                          LocalDate workingDate,
                                          LocalDateTime clockInTime,
+                                         BigDecimal clockInLatitude,
+                                         BigDecimal clockInLongitude,
                                          LocalDateTime leaveWorkAt,
                                          LocalDateTime clockOutTime,
+                                         BigDecimal clockOutLatitude,
+                                         BigDecimal clockOutLongitude,
                                          String message,
                                          LocalDateTime createdDate,
                                          String createdBy,
@@ -29,15 +34,20 @@ public record AttendanceRecordV1Response(Long id,
     implements AttendanceRecordResponse {
 
     public static AttendanceRecordResponse from(AttendanceRecord attendanceRecord) {
-        return AttendanceRecordV1Response.builder()
+        return AttendanceRecordResponseV2.builder()
             .id(attendanceRecord.getId())
             .userUniqueId(attendanceRecord.getUserUniqueId())
             .status(attendanceRecord.getStatus())
             .dayOffType(attendanceRecord.getDayOffType())
+            .workType(attendanceRecord.getWorkType())
             .workingDate(attendanceRecord.getWorkingDate())
             .clockInTime(attendanceRecord.getClockInTime())
+            .clockInLatitude(attendanceRecord.getClockInLatitude())
+            .clockInLongitude(attendanceRecord.getClockInLongitude())
             .leaveWorkAt(attendanceRecord.getLeaveWorkAt())
             .clockOutTime(attendanceRecord.getClockOutTime())
+            .clockOutLatitude(attendanceRecord.getClockOutLatitude())
+            .clockOutLongitude(attendanceRecord.getClockOutLongitude())
             .message(attendanceRecord.getMessage())
             .createdDate(attendanceRecord.getCreatedDate())
             .createdBy(attendanceRecord.getCreatedBy())

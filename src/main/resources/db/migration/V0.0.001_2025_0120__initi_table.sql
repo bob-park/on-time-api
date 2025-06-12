@@ -74,20 +74,27 @@ create table attendances_gps
 -- attendances_records
 create table attendances_records
 (
-    id                 bigserial               not null primary key,
-    user_unique_id     varchar(41)             not null,
-    status             varchar(20)             not null,
-    day_off_type       varchar(20),
-    working_date       date                    not null,
-    clock_in_time      timestamp,
-    leave_work_at      timestamp,
-    clock_out_time     timestamp,
-    message            text,
-    created_date       timestamp default now() not null,
-    created_by         varchar(50)             not null,
-    last_modified_date timestamp,
-    last_modified_by   varchar(50)
+    id                  bigserial               not null primary key,
+    user_unique_id      varchar(41)             not null,
+    status              varchar(20)             not null,
+    day_off_type        varchar(20),
+    working_date        date                    not null,
+    clock_in_time       timestamp,
+    clock_in_latitude   numeric(10, 7),
+    clock_in_longitude  numeric(10, 7),
+    leave_work_at       timestamp,
+    clock_out_time      timestamp,
+    clock_out_latitude  numeric(10, 7),
+    clock_out_longitude numeric(10, 7),
+    message             text,
+    created_date        timestamp default now() not null,
+    created_by          varchar(50)             not null,
+    last_modified_date  timestamp,
+    last_modified_by    varchar(50)
 );
+
+-- attendances_records_gps
+
 
 -- users_notification_providers
 create table users_notification_providers

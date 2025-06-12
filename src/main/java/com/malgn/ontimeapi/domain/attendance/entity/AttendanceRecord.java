@@ -3,6 +3,7 @@ package com.malgn.ontimeapi.domain.attendance.entity;
 import static com.google.common.base.Preconditions.*;
 import static org.apache.commons.lang3.ObjectUtils.*;
 
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -56,20 +57,30 @@ public class AttendanceRecord extends BaseEntity<Long> {
     private LocalDate workingDate;
 
     @Enumerated(EnumType.STRING)
+    private AttendanceRecordWorkType workType;
+
+    @Enumerated(EnumType.STRING)
     private AttendanceStatus status;
 
     @Enumerated(EnumType.STRING)
     private DayOffType dayOffType;
 
     private LocalDateTime clockInTime;
+    private BigDecimal clockInLatitude;
+    private BigDecimal clockInLongitude;
+
     private LocalDateTime leaveWorkAt;
+
     private LocalDateTime clockOutTime;
+    private BigDecimal clockOutLatitude;
+    private BigDecimal clockOutLongitude;
 
     private String message;
 
     @Builder
-    private AttendanceRecord(Long id, String userUniqueId, LocalDate workingDate, AttendanceStatus status,
-        DayOffType dayOffType, String message) {
+    private AttendanceRecord(Long id, String userUniqueId, LocalDate workingDate, AttendanceRecordWorkType workType,
+        AttendanceStatus status, DayOffType dayOffType, BigDecimal clockInLatitude, BigDecimal clockInLongitude,
+        BigDecimal clockOutLatitude, BigDecimal clockOutLongitude, String message) {
 
         checkArgument(StringUtils.isNotBlank(userUniqueId), "userUniqueId must be provided.");
         checkArgument(isNotEmpty(workingDate), "workingDate must be provided.");
@@ -80,11 +91,28 @@ public class AttendanceRecord extends BaseEntity<Long> {
         this.userUniqueId = userUniqueId;
         this.workingDate = workingDate;
         this.message = message;
+        this.workType = workType;
+        this.clockInLatitude = clockInLatitude;
+        this.clockInLongitude = clockInLongitude;
+        this.clockOutLatitude = clockOutLatitude;
+        this.clockOutLongitude = clockOutLongitude;
+
     }
 
     /*
      * 편의 메서드
      */
+    public void clockIn(AttendanceRecordWorkType workType, BigDecimal clockInLatitude, BigDecimal clockInLongitude) {
+        this.workType = workType;
+        this.clockInLatitude = clockInLatitude;
+        this.clockInLongitude = clockInLongitude;
+    }
+
+    public void clockOut(BigDecimal clockOutLatitude, BigDecimal clockOutLongitude) {
+        this.clockOutLatitude = clockOutLatitude;
+        this.clockOutLongitude = clockOutLongitude;
+    }
+
     public void updateClockInTime(LocalDateTime clockInTime) {
         this.clockInTime = clockInTime;
         this.leaveWorkAt = calculateLeaveWorkAt(clockInTime);
