@@ -13,7 +13,6 @@ import org.springframework.security.access.expression.method.DefaultMethodSecuri
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
-import org.springframework.security.access.hierarchicalroles.RoleHierarchyUtils;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -26,15 +25,13 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import com.malgn.auth.client.RoleClient;
 import com.malgn.auth.model.RoleResponse;
 import com.malgn.common.utils.role.RoleUtils;
 import com.malgn.ontimeapi.configure.security.converter.JwtRoleGrantAuthoritiesConverter;
-import com.malgn.ontimeapi.configure.security.handler.RestAccessDeniedHandler;
-import com.malgn.ontimeapi.configure.security.handler.RestAuthenticationEntryPoint;
+import com.malgn.security.handler.RestAccessDeniedHandler;
+import com.malgn.security.handler.RestAuthenticationEntryPoint;
 
 @Slf4j
 @RequiredArgsConstructor

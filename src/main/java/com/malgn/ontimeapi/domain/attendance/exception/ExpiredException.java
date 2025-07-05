@@ -1,6 +1,8 @@
 package com.malgn.ontimeapi.domain.attendance.exception;
 
-public class ExpiredException extends RuntimeException {
+import com.malgn.common.exception.ServiceRuntimeException;
+
+public class ExpiredException extends ServiceRuntimeException {
 
     private static final String DEFAULT_MESSAGE = "Expired.";
 
