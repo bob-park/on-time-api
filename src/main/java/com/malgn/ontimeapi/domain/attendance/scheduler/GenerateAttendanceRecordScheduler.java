@@ -38,7 +38,7 @@ public class GenerateAttendanceRecordScheduler {
 
         for (UserResponse user : users) {
 
-            boolean isExist = recordRepository.existRecord(user.uniqueId(), now);
+            boolean isExist = recordRepository.existRecord(user.id(), now);
 
             if (isExist) {
                 continue;
@@ -47,7 +47,7 @@ public class GenerateAttendanceRecordScheduler {
             // TODO 연(월)차 연동 필요
             AttendanceRecord createdRecord =
                 AttendanceRecord.builder()
-                    .userUniqueId(user.uniqueId())
+                    .userUniqueId(user.id())
                     .workingDate(now)
                     .build();
 

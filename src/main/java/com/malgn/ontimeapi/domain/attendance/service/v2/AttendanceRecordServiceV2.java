@@ -72,7 +72,7 @@ public class AttendanceRecordServiceV2 implements AttendanceRecordService {
         checkArgument(StringUtils.equals(currentUserId, user.userId()), "Not match login account and record account");
 
         AttendanceRecord attendanceRecord =
-            attendanceRecordRepository.getWaitingByWorkingDate(user.uniqueId(),
+            attendanceRecordRepository.getWaitingByWorkingDate(user.id(),
                     LocalDate.now())
                 .orElseThrow(() -> new NotFoundException("No exist attendance record."));
 
