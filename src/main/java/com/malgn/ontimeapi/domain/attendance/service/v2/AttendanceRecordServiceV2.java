@@ -69,7 +69,7 @@ public class AttendanceRecordServiceV2 implements AttendanceRecordService {
         String currentUserId = AuthUtils.getCurrentUserId();
         UserResponse user = userClient.getById(requestV2.userUniqueId());
 
-        checkArgument(StringUtils.equals(currentUserId, user.userId()), "Not match login account and record account");
+        // checkArgument(StringUtils.equals(currentUserId, user.userId()), "Not match login account and record account");
 
         AttendanceRecord attendanceRecord =
             attendanceRecordRepository.getWaitingByWorkingDate(user.id(),
