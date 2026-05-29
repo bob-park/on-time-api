@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
@@ -23,8 +25,16 @@ import com.google.common.collect.Maps;
 
 import feign.RequestInterceptor;
 
+import com.malgn.auth.client.AuthClient;
+import com.malgn.auth.context.AuthContext;
+import com.malgn.auth.context.AuthContextHolder;
+import com.malgn.auth.context.KeyFlowPrincipal;
+
+@RequiredArgsConstructor
 @Configuration
 public class FeignConfiguration {
+
+    private final AuthClient authClient;
 
     @Bean
     @LoadBalanced
@@ -48,11 +58,15 @@ public class FeignConfiguration {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication != null && !authentication.getClass().isAssignableFrom(AnonymousAuthenticationToken.class)) {
+        if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
 
             Jwt jwt = (Jwt)authentication.getPrincipal();
 
             accessToken = jwt.getTokenValue();
+        }
+
+        if (StringUtils.isBlank(accessToken)) {
+            accessToken = getAccessToken();
         }
 
         if (StringUtils.isNotBlank(accessToken)) {
@@ -65,4 +79,18 @@ public class FeignConfiguration {
         return headers;
     }
 
+    private String getAccessToken() {
+        AuthContext currentContext = AuthContextHolder.getCurrentContext();
+
+        KeyFlowPrincipal principal = currentContext != null ? currentContext.getPrincipal() : null;
+
+        if (principal == null || principal.isExpired()) {
+            authClient.token();
+
+            currentContext = AuthContextHolder.getCurrentContext();
+            principal = currentContext.getPrincipal();
+        }
+
+        return principal.getAccessToken();
+    }
 }
