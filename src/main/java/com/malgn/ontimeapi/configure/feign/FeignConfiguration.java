@@ -25,7 +25,6 @@ import com.google.common.collect.Maps;
 
 import feign.RequestInterceptor;
 
-import com.malgn.auth.client.AuthClient;
 import com.malgn.auth.context.AuthContext;
 import com.malgn.auth.context.AuthContextHolder;
 import com.malgn.auth.context.KeyFlowPrincipal;
@@ -34,7 +33,6 @@ import com.malgn.auth.context.KeyFlowPrincipal;
 @Configuration
 public class FeignConfiguration {
 
-    private final AuthClient authClient;
 
     @Bean
     @LoadBalanced

@@ -8,11 +8,15 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.malgn.auth.client.AuthClient;
 import com.malgn.auth.context.AuthContextHolder;
+import com.malgn.auth.context.DefaultAuthContext;
+import com.malgn.auth.context.DefaultPrincipal;
 import com.malgn.common.model.SimplePageImpl;
 import com.malgn.ontimeapi.domain.attendance.entity.AttendanceRecord;
 import com.malgn.ontimeapi.domain.attendance.repository.AttendanceRecordRepository;
@@ -25,16 +29,17 @@ import com.malgn.ontimeapi.domain.user.model.UserResponse;
 @Transactional(readOnly = true)
 public class GenerateAttendanceRecordScheduler {
 
+    private final OAuth2AuthorizedClientManager oAuthClientManager;
+
     private final AttendanceRecordRepository recordRepository;
 
-    private final AuthClient authClient;
     private final UserFeignClient userClient;
 
     @Transactional
     @Scheduled(cron = "${on-time.attendance.schedule.cron-generate-attendance-record}")
     public void generateAttendanceRecord() {
 
-        authClient.token();
+        setClientAuthentication();
 
         SimplePageImpl<UserResponse> result = userClient.getAll(PageRequest.of(0, 1_000));
 
@@ -64,6 +69,26 @@ public class GenerateAttendanceRecordScheduler {
         }
 
         AuthContextHolder.setContext(null);
+    }
+
+    private void setClientAuthentication() {
+
+        OAuth2AuthorizeRequest req =
+            OAuth2AuthorizeRequest
+                .withClientRegistrationId("keyflow-auth")
+                .principal("keyflow-auth")   // ← 아래 설명
+                .build();
+
+        OAuth2AuthorizedClient client = oAuthClientManager.authorize(req);
+        String token = client.getAccessToken().getTokenValue();
+
+        AuthContextHolder.setContext(
+            new DefaultAuthContext(
+                DefaultPrincipal.builder()
+                    .name("keyflow-auth")
+                    .accessToken(token)
+                    .build()));
+
     }
 
 }
