@@ -11,6 +11,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.malgn.auth.client.AuthClient;
+import com.malgn.auth.context.AuthContextHolder;
 import com.malgn.common.model.SimplePageImpl;
 import com.malgn.ontimeapi.domain.attendance.entity.AttendanceRecord;
 import com.malgn.ontimeapi.domain.attendance.repository.AttendanceRecordRepository;
@@ -25,11 +27,15 @@ public class GenerateAttendanceRecordScheduler {
 
     private final AttendanceRecordRepository recordRepository;
 
+    private final AuthClient authClient;
     private final UserFeignClient userClient;
 
     @Transactional
     @Scheduled(cron = "${on-time.attendance.schedule.cron-generate-attendance-record}")
     public void generateAttendanceRecord() {
+
+        authClient.token();
+
         SimplePageImpl<UserResponse> result = userClient.getAll(PageRequest.of(0, 1_000));
 
         List<UserResponse> users = result.content();
@@ -56,6 +62,8 @@ public class GenerateAttendanceRecordScheduler {
             log.debug("created attendance record: {}", createdRecord);
 
         }
+
+        AuthContextHolder.setContext(null);
     }
 
 }

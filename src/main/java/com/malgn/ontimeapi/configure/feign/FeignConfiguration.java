@@ -85,10 +85,7 @@ public class FeignConfiguration {
         KeyFlowPrincipal principal = currentContext != null ? currentContext.getPrincipal() : null;
 
         if (principal == null || principal.isExpired()) {
-            authClient.token();
-
-            currentContext = AuthContextHolder.getCurrentContext();
-            principal = currentContext.getPrincipal();
+            return null;
         }
 
         return principal.getAccessToken();
