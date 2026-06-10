@@ -11,9 +11,9 @@ import com.malgn.ontimeapi.domain.user.model.UserResponse;
 @FeignClient(name = "auth-user-api", contextId = "auth-user-api")
 public interface UserFeignClient {
 
-    @GetMapping(path = "api/v1/users/{uniqueId}")
+    @GetMapping(path = "api/v1/users/{uniqueId}/summary")
     UserResponse getById(@PathVariable String uniqueId);
 
-    @GetMapping(path = "api/v1/users")
+    @GetMapping(path = "api/v1/users/summaries")
     SimplePageImpl<UserResponse> getAll(Pageable pageable);
 }
